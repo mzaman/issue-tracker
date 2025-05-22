@@ -1,6 +1,7 @@
 version: '3.9'
 services:
   mysqldb:
+    container_name: ${ENV_FILE:-dev}-trial-day-mysql
     image: mysql:8.0
     env_file: ./.env
     environment:
@@ -12,6 +13,7 @@ services:
       - db_data:/var/lib/mysql
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
   app:
+    container_name: ${ENV_FILE:-dev}-trial-day-app
     depends_on:
       - mysqldb
     build: .
@@ -19,6 +21,7 @@ services:
     ports:
       - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
     environment:
+      - NODE_ENV=$NODE_ENV
       - PORT=$NODE_LOCAL_PORT
       - DB_HOST=mysqldb
       - DB_USER=$MYSQLDB_USER
