@@ -26,5 +26,17 @@ services:
       - DB_NAME=$MYSQLDB_DATABASE
       - DB_PORT=$MYSQLDB_DOCKER_PORT
 
-volumes: 
+  phpmyadmin:
+    container_name: ${ENV_FILE:-dev}-trial-day-phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - mysqldb
+    environment:
+      PMA_HOST: mysqldb
+      PMA_PORT: $MYSQLDB_DOCKER_PORT
+      MYSQL_ROOT_PASSWORD: $MYSQLDB_ROOT_PASSWORD
+    ports:
+      - 8081:80
+
+volumes:
   db_data:
