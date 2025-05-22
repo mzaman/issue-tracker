@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+source ./cmd/env ${1:-dev}
+
+docker-compose -f docker-compose.$ENV_FILE.yml up -d --build
+
+echo "Waiting for database to be ready..."
+sleep 15
+
+docker exec -i $(docker-compose -f docker-compose.$ENV_FILE.yml ps -q mysqldb) \
+  sh -c "mysql -uroot -p\"$MYSQLDB_ROOT_PASSWORD\" -e \"CREATE DATABASE IF NOT EXISTS \\\`$MYSQLDB_DATABASE\\\`;\""
+
+docker exec -it $(docker-compose -f docker-compose.$ENV_FILE.yml ps -q app) npm run migrate
+docker exec -it $(docker-compose -f docker-compose.$ENV_FILE.yml ps -q app) npm run seed
