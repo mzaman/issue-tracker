@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+ENV=$1
+
+if [ -z "$ENV" ]; then
+  echo "Usage: source env [dev|test|prod]"
+  return 1
+fi
+
+cp .env.$ENV .env
+
+echo "Loading environment variables for $ENV"
+export $(grep -v '^#' .env.$ENV | xargs)
