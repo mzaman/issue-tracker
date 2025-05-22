@@ -8,7 +8,8 @@ if [ -z "$ENV" ]; then
   return 1
 fi
 
-cp .env.$ENV .env
+cp -f docker-compose.$ENV.yml docker-compose.yml
+cp -f .env.$ENV .env
 
 echo "Loading environment variables for $ENV"
 export $(grep -v '^#' .env.$ENV | xargs)
