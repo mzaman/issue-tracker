@@ -38,17 +38,15 @@
 				"header": [
 					{
 						"key": "X-Client-ID",
-						"value": "my-client-id-123",
+						"value": "{{client_id}}",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/health",
-					"protocol": "http",
+					"raw": "{{base_url}}/health",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"health"
 					]
@@ -81,12 +79,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/login",
-					"protocol": "http",
+					"raw": "{{base_url}}/login",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"login"
 					]
@@ -100,21 +96,15 @@
 				"method": "GET",
 				"header": [
 					{
-						"key": "Authorization",
-						"value": "Bearer {{jwt_token}}"
-					},
-					{
 						"key": "X-Client-ID",
 						"value": "{{client_id}}"
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/issues",
-					"protocol": "http",
+					"raw": "{{base_url}}/issues",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"issues"
 					]
@@ -128,21 +118,15 @@
 				"method": "GET",
 				"header": [
 					{
-						"key": "Authorization",
-						"value": "Bearer {{jwt_token}}"
-					},
-					{
 						"key": "X-Client-ID",
 						"value": "{{client_id}}"
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/issues/1",
-					"protocol": "http",
+					"raw": "{{base_url}}/issues/1",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"issues",
 						"1"
@@ -157,10 +141,6 @@
 				"method": "POST",
 				"header": [
 					{
-						"key": "Authorization",
-						"value": "Bearer {{jwt_token}}"
-					},
-					{
 						"key": "X-Client-ID",
 						"value": "{{client_id}}"
 					},
@@ -174,12 +154,10 @@
 					"raw": "{\"title\":\"New Issue\",\"description\":\"Issue description\",\"created_by\":\"admin@example.com\"}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/issues",
-					"protocol": "http",
+					"raw": "{{base_url}}/issues",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"issues"
 					]
@@ -206,12 +184,10 @@
 					"raw": "{\"title\":\"Updated Issue\",\"description\":\"Updated description\",\"updated_by\":\"admin@example.com\"}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/issues/1",
-					"protocol": "http",
+					"raw": "{{base_url}}/issues/1",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"issues",
 						"1"
@@ -231,12 +207,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/issues/1",
-					"protocol": "http",
+					"raw": "{{base_url}}/issues/1",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"issues",
 						"1"
@@ -256,7 +230,37 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/issues/1/revisions",
+					"raw": "{{base_url}}/issues/1/revisions",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"issues",
+						"1",
+						"revisions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Compare Issue Revisions",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}",
+						"type": "text"
+					},
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/issues/1/compare?from=2024-01-01T00:00:00Z&to=2024-01-04T00:00:00Z&direction=desc&type=deep",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -265,7 +269,25 @@
 					"path": [
 						"issues",
 						"1",
-						"revisions"
+						"compare"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "2024-01-01T00:00:00Z"
+						},
+						{
+							"key": "to",
+							"value": "2024-01-04T00:00:00Z"
+						},
+						{
+							"key": "direction",
+							"value": "desc"
+						},
+						{
+							"key": "type",
+							"value": "deep"
+						}
 					]
 				}
 			},
@@ -277,7 +299,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hc3VkLnptbkBnbWFpbC5jb20iLCJyb2xlIjoiYXBwbGljYW50IiwiaWF0IjoxNzQ3OTI4OTQ3LCJleHAiOjE3NDc5MzYxNDd9.hiCx_vH8lcP1WF4mI2OFwRciREkvBOo7Cnm7Gokpbvw",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0Nzk0MjA0NCwiZXhwIjoxNzQ3OTQ5MjQ0fQ.BlDq4zOBl8z44uzyu18tGOauSb8o1rPJRlg57T5nLcM",
 				"type": "string"
 			}
 		]
@@ -307,12 +329,17 @@
 	"variable": [
 		{
 			"key": "jwt_token",
-			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hc3VkLnptbkBnbWFpbC5jb20iLCJyb2xlIjoiYXBwbGljYW50IiwiaWF0IjoxNzQ3OTMwNjA3LCJleHAiOjE3NDc5Mzc4MDd9.zENY8tMZpau90s2GOm9l-hLRBp0SCq1NXesEQXghDlU",
+			"value": "",
 			"disabled": true
 		},
 		{
 			"key": "client_id",
 			"value": "my-client-id-123"
+		},
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
 		}
 	]
 }
