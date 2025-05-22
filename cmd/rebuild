@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+source ./cmd/env ${1:-dev}
+
+docker-compose -f docker-compose.$ENV_FILE.yml down -v
+docker-compose -f docker-compose.$ENV_FILE.yml build --no-cache
+docker-compose -f docker-compose.$ENV_FILE.yml up -d
