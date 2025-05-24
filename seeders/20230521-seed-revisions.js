@@ -1,5 +1,28 @@
 'use strict';
 
+const _ = require('lodash');
+
+const deepDiff = (obj1, obj2, prefix = '') => {
+    const changes = {};
+    const keys = new Set([...Object.keys(obj1 || {}), ...Object.keys(obj2 || {})]);
+
+    for (const key of keys) {
+        const val1 = obj1 ? obj1[key] : undefined;
+        const val2 = obj2 ? obj2[key] : undefined;
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+
+        if (_.isEqual(val1, val2)) continue;
+
+        if (_.isObject(val1) && _.isObject(val2)) {
+            Object.assign(changes, deepDiff(val1, val2, fullKey));
+        } else {
+            changes[fullKey] = val2;
+        }
+    }
+
+    return changes;
+};
+
 module.exports = {
     up: async (queryInterface, Sequelize) => {
         // Fetch issues and users
@@ -25,15 +48,15 @@ module.exports = {
                 status: issue.status,
                 priority: issue.priority,
                 assignee: issue.assignee,
-                createdBy: issue.created_by,
-                createdAt: issue.created_at
+                createdBy: issue.created_by
+                // createdAt excluded as per your requirements
             };
 
             revisions.push({
                 issue_id: issue.id,
                 revision_number: revisionNumber,
                 issue: JSON.stringify(initialSnapshot),
-                changes: JSON.stringify(initialSnapshot),
+                changes: JSON.stringify({}),
                 updated_by: issue.updated_by || issue.created_by,
                 updated_at: issue.updated_at ? new Date(issue.updated_at) : new Date(issue.created_at)
             });
@@ -43,18 +66,30 @@ module.exports = {
             for (let i = 1; i < totalRevisions; i++) {
                 revisionNumber++;
 
+                // Randomly generate changed fields
                 const changedFields = {};
 
-                if (Math.random() < 0.6) changedFields.status = ['open', 'in_progress', 'resolved', 'closed'][Math.floor(Math.random() * 4)];
-                if (Math.random() < 0.5) changedFields.priority = ['low', 'medium', 'high', 'critical'][Math.floor(Math.random() * 4)];
-                if (Math.random() < 0.5) changedFields.description = "Updated: " + (Math.random() < 0.5 ? "Bug fixed partially." : "Investigating root cause.");
-                if (Math.random() < 0.4) changedFields.title = issue.title + (Math.random() < 0.5 ? " - urgent" : " - update");
-                if (Math.random() < 0.3) changedFields.assignee = Math.random() < 0.5 ? users[Math.floor(Math.random() * users.length)].id : null;
+                if (Math.random() < 0.6)
+                    changedFields.status = ['open', 'in_progress', 'resolved', 'closed'][Math.floor(Math.random() * 4)];
+                if (Math.random() < 0.5)
+                    changedFields.priority = ['low', 'medium', 'high', 'critical'][Math.floor(Math.random() * 4)];
+                if (Math.random() < 0.5)
+                    changedFields.description =
+                        'Updated: ' + (Math.random() < 0.5 ? 'Bug fixed partially.' : 'Investigating root cause.');
+                if (Math.random() < 0.4)
+                    changedFields.title = issue.title + (Math.random() < 0.5 ? ' - urgent' : ' - update');
+                if (Math.random() < 0.3)
+                    changedFields.assignee = Math.random() < 0.5 ? users[Math.floor(Math.random() * users.length)].id : null;
 
-                // Merge with previous snapshot
+                // Get previous snapshot object
                 const lastSnapshotRaw = revisions[revisions.length - 1].issue;
                 const lastSnapshot = JSON.parse(lastSnapshotRaw);
+
+                // Merge previous snapshot with changed fields for new snapshot
                 const newSnapshot = { ...lastSnapshot, ...changedFields };
+
+                // Calculate changes as deep diff between last and new snapshots
+                const changes = deepDiff(lastSnapshot, newSnapshot);
 
                 const updatedBy = users[Math.floor(Math.random() * users.length)].id;
 
@@ -66,7 +101,7 @@ module.exports = {
                     issue_id: issue.id,
                     revision_number: revisionNumber,
                     issue: JSON.stringify(newSnapshot),
-                    changes: JSON.stringify(changedFields),
+                    changes: JSON.stringify(changes),
                     updated_by: updatedBy,
                     updated_at: updatedAt
                 });
