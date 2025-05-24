@@ -167,12 +167,42 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues",
+					"raw": "{{base_url}}/issues?page=1&pageSize=15&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=priority&sortOrder=asc&search=",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"issues"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "pageSize",
+							"value": "15"
+						},
+						{
+							"key": "status",
+							"value": "open,in_progress,resolved"
+						},
+						{
+							"key": "priority",
+							"value": "medium,high,critical"
+						},
+						{
+							"key": "sortBy",
+							"value": "priority"
+						},
+						{
+							"key": "sortOrder",
+							"value": "asc"
+						},
+						{
+							"key": "search",
+							"value": ""
+						}
 					]
 				}
 			},
