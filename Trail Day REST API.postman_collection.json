@@ -79,7 +79,7 @@
 			"response": []
 		},
 		{
-			"name": "User Login",
+			"name": "Login",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -118,7 +118,7 @@
 			"response": []
 		},
 		{
-			"name": "User Login Without Client ID",
+			"name": "Login Without Client ID",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -217,7 +217,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"title\":\"New Issue\",\"description\":\"Issue description\"}"
+					"raw": "{\n    \"title\": \"New Issue\",\n    \"description\": \"Issue description\",\n    \"status\": \"open\",\n    \"priority\": \"normal\",\n    \"assignee\": null\n}"
 				},
 				"url": {
 					"raw": "{{base_url}}/issues",
@@ -247,7 +247,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"title\":\"Updated Issue\",\"description\":\"Updated description\",\"updated_by\":\"admin@example.com\"}"
+					"raw": "{\n    \"title\": \"Updated Issue for test\",\n    \"description\": \"Updated description for testing\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\",\n    \"assignee\": 3\n}"
 				},
 				"url": {
 					"raw": "{{base_url}}/issues/36",
@@ -257,33 +257,6 @@
 					"path": [
 						"issues",
 						"36"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Issue",
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{jwt_token}}"
-					},
-					{
-						"key": "X-Client-ID",
-						"value": "{{client_id}}"
-					}
-				],
-				"url": {
-					"raw": "{{base_url}}/issues/1",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"issues",
-						"1"
 					]
 				}
 			},
@@ -300,13 +273,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/1/revisions",
+					"raw": "{{base_url}}/issues/36/revisions",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"issues",
-						"1",
+						"36",
 						"revisions"
 					]
 				}
@@ -324,13 +297,14 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/1/compare?from=1&to=10&direction=asc&type=shallow",
+					"raw": "{{base_url}}/issues/1/revisions/compare?from=1&to=3&order=desc",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"issues",
 						"1",
+						"revisions",
 						"compare"
 					],
 					"query": [
@@ -340,15 +314,11 @@
 						},
 						{
 							"key": "to",
-							"value": "10"
+							"value": "3"
 						},
 						{
-							"key": "direction",
-							"value": "asc"
-						},
-						{
-							"key": "type",
-							"value": "shallow"
+							"key": "order",
+							"value": "desc"
 						}
 					]
 				}
@@ -361,7 +331,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODA0NzM1MiwiZXhwIjoxNzQ4MDU0NTUyfQ.nC3XyXrj4bI8EPLM0Vrq3ORcetk3ux0rpqS8x7WfzA8",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODEyMDIxMSwiZXhwIjoxNzQ4MTI3NDExfQ.oCGb31hAOdftDE__blTY9K28DYlCdyXbx0P3BKtNy8c",
 				"type": "string"
 			}
 		]
