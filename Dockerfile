@@ -12,3 +12,4 @@ COPY . /app
 EXPOSE 8080
 
 CMD ["node", "index.js"]
+# CMD ["npx", "nodemon", "index.js"]

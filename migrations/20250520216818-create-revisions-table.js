@@ -4,14 +4,15 @@ module.exports = {
     up: async (queryInterface, Sequelize) => {
         await queryInterface.createTable('revisions', {
             id: {
-                allowNull: false,
-                autoIncrement: true,
+                type: Sequelize.INTEGER.UNSIGNED,
                 primaryKey: true,
-                type: Sequelize.INTEGER.UNSIGNED
+                autoIncrement: true,
+                allowNull: false,
             },
-            issue_id: {
+            issueId: {
                 type: Sequelize.INTEGER.UNSIGNED,
                 allowNull: false,
+                field: 'issue_id',
                 references: {
                     model: 'issues',
                     key: 'id'
@@ -19,19 +20,42 @@ module.exports = {
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE'
             },
-            revision_data: {
+            revisionNumber: {
+                type: Sequelize.INTEGER.UNSIGNED,
+                allowNull: false,
+                field: 'revision_number'
+            },
+            issueSnapshot: {
                 type: Sequelize.JSON,
-                allowNull: false
+                allowNull: false,
+                field: 'issue_snapshot'
             },
             changes: {
                 type: Sequelize.JSON,
                 allowNull: false
             },
-            updated_at: {
+            updatedBy: {
+                type: Sequelize.INTEGER.UNSIGNED,
                 allowNull: false,
+                field: 'updated_by',
+                references: {
+                    model: 'users',
+                    key: 'id'
+                },
+                onUpdate: 'CASCADE',
+                onDelete: 'RESTRICT'
+            },
+            updatedAt: {
                 type: Sequelize.DATE,
-                defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+                allowNull: false,
+                field: 'updated_at'
             }
+        });
+
+        await queryInterface.addConstraint('revisions', {
+            fields: ['issue_id', 'revision_number'],
+            type: 'unique',
+            name: 'uniq_issue_revision_number'
         });
     },
 

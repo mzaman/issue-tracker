@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a41eceb6-ad98-48b0-a3f7-cc677790e89e",
+		"_postman_id": "4b05dfb0-7636-447d-a649-f2ec4e9f01f4",
 		"name": "Trail Day REST API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "697454"
@@ -55,8 +55,35 @@
 			"response": []
 		},
 		{
+			"name": "Health Check Without Client ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "User Login",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -71,7 +98,46 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"email\":\"admin@example.com\",\"password\":\"password123\"}",
+					"raw": "{\"email\":\"admin@example.com\",\"password\":\"Password123\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Login Without Client ID",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\":\"admin@example.com\",\"password\":\"Password123\"}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -151,7 +217,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"title\":\"New Issue\",\"description\":\"Issue description\",\"created_by\":\"admin@example.com\"}"
+					"raw": "{\"title\":\"New Issue\",\"description\":\"Issue description\"}"
 				},
 				"url": {
 					"raw": "{{base_url}}/issues",
@@ -184,13 +250,13 @@
 					"raw": "{\"title\":\"Updated Issue\",\"description\":\"Updated description\",\"updated_by\":\"admin@example.com\"}"
 				},
 				"url": {
-					"raw": "{{base_url}}/issues/1",
+					"raw": "{{base_url}}/issues/36",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"issues",
-						"1"
+						"36"
 					]
 				}
 			},
@@ -201,6 +267,10 @@
 			"request": {
 				"method": "DELETE",
 				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}"
+					},
 					{
 						"key": "X-Client-ID",
 						"value": "{{client_id}}"
@@ -249,23 +319,15 @@
 				"method": "GET",
 				"header": [
 					{
-						"key": "Authorization",
-						"value": "Bearer {{jwt_token}}",
-						"type": "text"
-					},
-					{
 						"key": "X-Client-ID",
-						"value": "{{client_id}}",
-						"type": "text"
+						"value": "{{client_id}}"
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/issues/1/compare?from=2024-01-01T00:00:00Z&to=2024-01-04T00:00:00Z&direction=desc&type=deep",
-					"protocol": "http",
+					"raw": "{{base_url}}/issues/1/compare?from=1&to=10&direction=asc&type=shallow",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"issues",
 						"1",
@@ -274,19 +336,19 @@
 					"query": [
 						{
 							"key": "from",
-							"value": "2024-01-01T00:00:00Z"
+							"value": "1"
 						},
 						{
 							"key": "to",
-							"value": "2024-01-04T00:00:00Z"
+							"value": "10"
 						},
 						{
 							"key": "direction",
-							"value": "desc"
+							"value": "asc"
 						},
 						{
 							"key": "type",
-							"value": "deep"
+							"value": "shallow"
 						}
 					]
 				}
@@ -299,7 +361,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0Nzk0MjA0NCwiZXhwIjoxNzQ3OTQ5MjQ0fQ.BlDq4zOBl8z44uzyu18tGOauSb8o1rPJRlg57T5nLcM",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODA0NzM1MiwiZXhwIjoxNzQ4MDU0NTUyfQ.nC3XyXrj4bI8EPLM0Vrq3ORcetk3ux0rpqS8x7WfzA8",
 				"type": "string"
 			}
 		]
@@ -329,8 +391,7 @@
 	"variable": [
 		{
 			"key": "jwt_token",
-			"value": "",
-			"disabled": true
+			"value": ""
 		},
 		{
 			"key": "client_id",
@@ -338,8 +399,7 @@
 		},
 		{
 			"key": "base_url",
-			"value": "http://localhost:8080",
-			"type": "string"
+			"value": "http://localhost:8080"
 		}
 	]
 }
