@@ -4,4 +4,4 @@ set -e
 source ./cmd/env ${1:-dev}
 
 docker-compose -f docker-compose.$ENV_FILE.yml stop
-docker-compose -f docker-compose.$ENV_FILE.yml up -d --build
+docker-compose -f docker-compose.$ENV_FILE.yml up --build --watch

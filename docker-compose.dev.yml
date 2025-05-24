@@ -1,4 +1,5 @@
 version: '3.9'
+
 services:
   mysqldb:
     container_name: ${ENV_FILE:-dev}-trial-day-mysql
@@ -6,30 +7,35 @@ services:
     env_file:
       - ./.env.${ENV_FILE:-dev}
     environment:
-      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
-      - MYSQL_DATABASE=$MYSQLDB_DATABASE
+      - MYSQL_ROOT_PASSWORD=${MYSQLDB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQLDB_DATABASE}
     ports:
-      - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
+      - ${MYSQLDB_LOCAL_PORT}:${MYSQLDB_DOCKER_PORT}
     volumes:
-      - db_data:/var/lib/mysql
+      - ${ENV_FILE:-dev}_db_data:/var/lib/mysql
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
   app:
     container_name: ${ENV_FILE:-dev}-trial-day-app
     depends_on:
       - mysqldb
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    image: ${ENV_FILE:-dev}-trial-day-app
     env_file:
       - ./.env.${ENV_FILE:-dev}
     ports:
-      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+      - ${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}
     environment:
-      - NODE_ENV=$NODE_ENV
-      - PORT=$NODE_LOCAL_PORT
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=${NODE_LOCAL_PORT}
       - DB_HOST=mysqldb
-      - DB_USER=$MYSQLDB_USER
-      - DB_PASSWORD=$MYSQLDB_ROOT_PASSWORD
-      - DB_NAME=$MYSQLDB_DATABASE
-      - DB_PORT=$MYSQLDB_DOCKER_PORT
+      - DB_USER=${MYSQLDB_USER}
+      - DB_PASSWORD=${MYSQLDB_ROOT_PASSWORD}
+      - DB_NAME=${MYSQLDB_DATABASE}
+      - DB_PORT=${MYSQLDB_DOCKER_PORT}
 
   phpmyadmin:
     container_name: ${ENV_FILE:-dev}-trial-day-phpmyadmin
@@ -38,10 +44,12 @@ services:
       - mysqldb
     environment:
       PMA_HOST: mysqldb
-      PMA_PORT: $MYSQLDB_DOCKER_PORT
-      MYSQL_ROOT_PASSWORD: $MYSQLDB_ROOT_PASSWORD
+      PMA_PORT: ${MYSQLDB_DOCKER_PORT}
+      MYSQL_ROOT_PASSWORD: ${MYSQLDB_ROOT_PASSWORD}
     ports:
       - 8081:80
 
 volumes:
-  db_data:
+  dev_db_data:
+  prod_db_data:
+  test_db_data:

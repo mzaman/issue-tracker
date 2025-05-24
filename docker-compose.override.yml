@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    image: ${ENV_FILE}-trial-day-app
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    command: [ "nodemon", "index.js" ]
+    environment:
+      - NODE_ENV=development
+    ports:
+      - ${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}
