@@ -32,7 +32,7 @@ module.exports = {
             revisions.push({
                 issue_id: issue.id,
                 revision_number: revisionNumber,
-                issue_snapshot: JSON.stringify(initialSnapshot),
+                issue: JSON.stringify(initialSnapshot),
                 changes: JSON.stringify(initialSnapshot),
                 updated_by: issue.updated_by || issue.created_by,
                 updated_at: issue.updated_at ? new Date(issue.updated_at) : new Date(issue.created_at)
@@ -52,7 +52,7 @@ module.exports = {
                 if (Math.random() < 0.3) changedFields.assignee = Math.random() < 0.5 ? users[Math.floor(Math.random() * users.length)].id : null;
 
                 // Merge with previous snapshot
-                const lastSnapshotRaw = revisions[revisions.length - 1].issue_snapshot;
+                const lastSnapshotRaw = revisions[revisions.length - 1].issue;
                 const lastSnapshot = JSON.parse(lastSnapshotRaw);
                 const newSnapshot = { ...lastSnapshot, ...changedFields };
 
@@ -65,7 +65,7 @@ module.exports = {
                 revisions.push({
                     issue_id: issue.id,
                     revision_number: revisionNumber,
-                    issue_snapshot: JSON.stringify(newSnapshot),
+                    issue: JSON.stringify(newSnapshot),
                     changes: JSON.stringify(changedFields),
                     updated_by: updatedBy,
                     updated_at: updatedAt

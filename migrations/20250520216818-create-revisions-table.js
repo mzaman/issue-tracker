@@ -25,14 +25,14 @@ module.exports = {
                 allowNull: false,
                 field: 'revision_number'
             },
-            issueSnapshot: {
+            issue: {
                 type: Sequelize.JSON,
                 allowNull: false,
-                field: 'issue_snapshot'
+                field: 'issue'
             },
             changes: {
                 type: Sequelize.JSON,
-                allowNull: false
+                allowNull: true
             },
             updatedBy: {
                 type: Sequelize.INTEGER.UNSIGNED,
