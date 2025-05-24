@@ -4,6 +4,7 @@ require('dotenv').config();
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
 
+const errorHandler = require('./middleware/errorHandler');
 const { jwtMiddleware, clientIdMiddleware } = require('./middleware/auth');
 const router = require('./lib/routes');
 const config = require('./config');
@@ -11,6 +12,7 @@ const config = require('./config');
 const app = new Koa();
 
 app.use(bodyParser());
+app.use(errorHandler);
 app.use(clientIdMiddleware);
 app.use(jwtMiddleware);
 
