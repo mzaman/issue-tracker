@@ -3,13 +3,86 @@ set -e
 
 source ./cmd/env ${1:-dev}
 
-docker-compose -f docker-compose.$ENV_FILE.yml up -d --build
+DOCKER_YML="docker-compose.${ENV_FILE:-dev}.yml"
 
-echo "Waiting for database to be ready..."
-sleep 15
+# Default settings
+max_attempts=50       # maximum number of attempts to run a command
+wait_seconds=3        # default wait time between attempts (seconds)
+mysql_wait_seconds=5  # separate default wait time for MySQL readiness check
 
-docker exec -i $(docker-compose -f docker-compose.$ENV_FILE.yml ps -q mysqldb) \
-  sh -c "mysql -uroot -p\"$MYSQLDB_ROOT_PASSWORD\" -e \"CREATE DATABASE IF NOT EXISTS \\\`$MYSQLDB_DATABASE\\\`;\""
+# Check Docker daemon
+check_docker() {
+  if ! docker info > /dev/null 2>&1; then
+    echo "Docker service is not running. Please start Docker."
+    exit 1
+  fi
+  echo "Docker service is running."
+}
 
-docker exec -it $(docker-compose -f docker-compose.$ENV_FILE.yml ps -q app) npm run migrate
-docker exec -it $(docker-compose -f docker-compose.$ENV_FILE.yml ps -q app) npm run seed
+# Check if container is running, with retries
+# Usage: check_container_running <container_name> [max_attempts] [wait_seconds]
+check_container_running() {
+  local container_name=$1
+  local attempts=${2:-$max_attempts}
+  local wait_time=${3:-$wait_seconds}
+  local attempt=1
+
+  while [ $attempt -le $attempts ]; do
+    if [ "$(docker inspect -f '{{.State.Running}}' $container_name 2>/dev/null)" == "true" ]; then
+      echo "Container $container_name is running."
+      return 0
+    else
+      echo "Container $container_name is not running (attempt $attempt/$attempts). Waiting $wait_time seconds..."
+      sleep $wait_time
+    fi
+    attempt=$((attempt + 1))
+  done
+
+  echo "Container $container_name failed to start after $attempts attempts."
+  exit 1
+}
+
+# Wait for MySQL readiness inside container
+# Usage: wait_for_mysql_ready <container_name> [max_attempts] [wait_seconds]
+wait_for_mysql_ready() {
+  local container_name=$1
+  local attempts=${2:-$max_attempts}
+  local wait_time=${3:-$mysql_wait_seconds}
+  local attempt=1
+
+  while [ $attempt -le $attempts ]; do
+    echo "Checking MySQL readiness (attempt $attempt/$attempts)..."
+    if docker exec "$container_name" mysqladmin ping -uroot -p"$MYSQLDB_ROOT_PASSWORD" --silent; then
+      echo "MySQL server in $container_name is ready."
+      return 0
+    else
+      echo "MySQL server not ready yet, retrying in $wait_time seconds..."
+      sleep $wait_time
+    fi
+    attempt=$((attempt + 1))
+  done
+
+  echo "MySQL server in $container_name did not become ready after $attempts attempts."
+  exit 1
+}
+
+# Main execution starts here
+check_docker
+
+docker-compose -f $DOCKER_YML up -d --build
+
+MYSQL_CONTAINER=$(docker-compose -f $DOCKER_YML ps -q mysqldb)
+APP_CONTAINER=$(docker-compose -f $DOCKER_YML ps -q app)
+
+# Using default retries and wait times
+check_container_running "$MYSQL_CONTAINER"
+check_container_running "$APP_CONTAINER"
+
+wait_for_mysql_ready "$MYSQL_CONTAINER"
+
+docker exec -i "$MYSQL_CONTAINER" sh -c "mysql -uroot -p\"$MYSQLDB_ROOT_PASSWORD\" -e \"CREATE DATABASE IF NOT EXISTS \\\`$MYSQLDB_DATABASE\\\`;\""
+
+echo "Running migrations and seeders..."
+
+docker exec -it "$APP_CONTAINER" npm run migrate
+docker exec -it "$APP_CONTAINER" npm run seed
