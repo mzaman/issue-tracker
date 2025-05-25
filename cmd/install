@@ -84,5 +84,6 @@ docker exec -i "$MYSQL_CONTAINER" sh -c "mysql -uroot -p\"$MYSQLDB_ROOT_PASSWORD
 
 echo "Running migrations and seeders..."
 
+docker exec -it "$APP_CONTAINER" npm ci
 docker exec -it "$APP_CONTAINER" npm run migrate
 docker exec -it "$APP_CONTAINER" npm run seed
