@@ -55,109 +55,37 @@
 			"response": []
 		},
 		{
-			"name": "Health Check Without Client ID",
+			"name": "Task 1: Create New Issue (Please login first) *",
 			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "X-Client-ID",
-						"value": "{{client_id}}",
-						"type": "text",
-						"disabled": true
-					}
-				],
-				"url": {
-					"raw": "{{base_url}}/health",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"health"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Login",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
 				"method": "POST",
 				"header": [
 					{
-						"key": "Content-Type",
-						"value": "application/json"
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
 					},
 					{
-						"key": "X-Client-ID",
-						"value": "{{client_id}}",
-						"type": "text"
+						"key": "Content-Type",
+						"value": "application/json"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"email\":\"admin@example.com\",\"password\":\"Password123\"}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{\n    \"title\": \"Bug in issue-service\",\n    \"description\": \"Ah snap :(\",\n    \"status\": \"open\",\n    \"priority\": \"medium\",\n    \"assignee\": null\n}"
 				},
 				"url": {
-					"raw": "{{base_url}}/login",
+					"raw": "{{base_url}}/issues",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
-						"login"
+						"issues"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Login Without Client ID",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "X-Client-ID",
-						"value": "{{client_id}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\"email\":\"admin@example.com\",\"password\":\"Password123\"}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{base_url}}/login",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get All Issues",
+			"name": "Task 2: Get Issues",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -167,7 +95,354 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues?page=1&pageSize=15&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=priority&sortOrder=asc&search=",
+					"raw": "{{base_url}}/issues?page=1&pageSize=5&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=id&sortOrder=desc&search=",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"issues"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "pageSize",
+							"value": "5"
+						},
+						{
+							"key": "status",
+							"value": "open,in_progress,resolved"
+						},
+						{
+							"key": "priority",
+							"value": "medium,high,critical"
+						},
+						{
+							"key": "sortBy",
+							"value": "id"
+						},
+						{
+							"key": "sortOrder",
+							"value": "desc"
+						},
+						{
+							"key": "search",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 2.1: Get Issue by ID (36)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/issues/36",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"issues",
+						"36"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 3: Update Issue with ID (36)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Bug in issue-service\",\n    \"description\": \"It does not generate revisions\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\",\n    \"assignee\": 3\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/issues/36",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"issues",
+						"36"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 4: List Revisions (Issue ID: 36)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/issues/36/revisions",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"issues",
+						"36",
+						"revisions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 5: Login (Set bearer token after login) *",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\":\"admin@example.com\",\"password\":\"Password123\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 5.1: X-Client-ID Access Control (Missing header)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/issues/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"issues",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 5.2: X-Client-ID Access (Forbidden)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "Invalid_X-Client-ID_Test"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/issues/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"issues",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 5.3: Authorization (Unauthorized)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/issues/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"issues",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 5.4: Authorization (Invalid Token)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODEzODExNSwiZXhwIjoxNzQ4MTQ4OTE1fQ.NXRDBKS8hz360z2YHQlji8BhSepVNE0wT5GXtmob7Ok***",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/issues/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"issues",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 5.5: Authorization (Expired Token)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODEzODExNSwiZXhwIjoxNzQ4MTQ4OTE1fQ.NXRDBKS8hz360z2YHQlji8BhSepVNE0wT5GXtmob7Ok",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/issues/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"issues",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 6: Compare Revisions (Issue ID: 36)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/issues/36/revisions/compare?from=1&to=10&order=desc",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"issues",
+						"36",
+						"revisions",
+						"compare"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "1"
+						},
+						{
+							"key": "to",
+							"value": "10"
+						},
+						{
+							"key": "order",
+							"value": "desc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get/Search/Filter/Sort Issues with Pagination (Task 2)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/issues?page=1&pageSize=15&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=priority&sortOrder=desc&search=",
 					"host": [
 						"{{base_url}}"
 					],
@@ -197,7 +472,7 @@
 						},
 						{
 							"key": "sortOrder",
-							"value": "asc"
+							"value": "desc"
 						},
 						{
 							"key": "search",
@@ -209,7 +484,7 @@
 			"response": []
 		},
 		{
-			"name": "Get Issue by ID",
+			"name": "Get Issue by ID (Task 2)",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -232,68 +507,7 @@
 			"response": []
 		},
 		{
-			"name": "Create New Issue",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-Client-ID",
-						"value": "{{client_id}}"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"title\": \"New Issue\",\n    \"description\": \"Issue description\",\n    \"status\": \"open\",\n    \"priority\": \"normal\",\n    \"assignee\": null\n}"
-				},
-				"url": {
-					"raw": "{{base_url}}/issues",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"issues"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update Issue",
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "X-Client-ID",
-						"value": "{{client_id}}"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"title\": \"Updated Issue for test\",\n    \"description\": \"Updated description for testing\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\",\n    \"assignee\": 3\n}"
-				},
-				"url": {
-					"raw": "{{base_url}}/issues/36",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"issues",
-						"36"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "List Issue Revisions",
+			"name": "List Issue Revisions (Task 4)",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -303,13 +517,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/36/revisions",
+					"raw": "{{base_url}}/issues/1/revisions",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"issues",
-						"36",
+						"1",
 						"revisions"
 					]
 				}
@@ -317,7 +531,7 @@
 			"response": []
 		},
 		{
-			"name": "Compare Issue Revisions",
+			"name": "Compare Issue Revisions (Task 6)",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -327,7 +541,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/1/revisions/compare?from=1&to=3&order=desc",
+					"raw": "{{base_url}}/issues/1/revisions/compare?from=1&to=10&order=asc",
 					"host": [
 						"{{base_url}}"
 					],
@@ -344,11 +558,11 @@
 						},
 						{
 							"key": "to",
-							"value": "3"
+							"value": "10"
 						},
 						{
 							"key": "order",
-							"value": "desc"
+							"value": "asc"
 						}
 					]
 				}
@@ -361,7 +575,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODEyMDIxMSwiZXhwIjoxNzQ4MTI3NDExfQ.oCGb31hAOdftDE__blTY9K28DYlCdyXbx0P3BKtNy8c",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODE1NjI5NSwiZXhwIjoxNzQ4MTY3MDk1fQ.CZaBYpP1_a3waQL_kVbwtPCUqWkuqAWzl31cIKZpBTg",
 				"type": "string"
 			}
 		]
