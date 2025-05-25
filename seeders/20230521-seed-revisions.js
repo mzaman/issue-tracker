@@ -23,9 +23,38 @@ const deepDiff = (obj1, obj2, prefix = '') => {
     return changes;
 };
 
+const descriptionFragments = {
+    open: [
+        'New issue reported.',
+        'Needs triage and assignment.',
+        'Waiting for more info from reporter.'
+    ],
+    in_progress: [
+        'Currently investigating root cause.',
+        'Attempting partial fixes.',
+        'Logs collected for debugging.'
+    ],
+    resolved: [
+        'Bug fixed and verified.',
+        'Resolved after patch deployment.',
+        'Issue marked resolved, pending close.'
+    ],
+    closed: [
+        'Issue closed after QA confirmation.',
+        'No further action required.',
+        'Closed as duplicate or invalid.'
+    ]
+};
+
+const priorityStatusRules = {
+    critical: ['open', 'in_progress'],
+    high: ['open', 'in_progress', 'resolved'],
+    medium: ['open', 'in_progress', 'resolved', 'closed'],
+    low: ['open', 'resolved', 'closed']
+};
+
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        // Fetch issues and users
         const issues = await queryInterface.sequelize.query(
             'SELECT id, created_by, created_at, updated_by, updated_at, title, description, status, priority, assignee FROM issues ORDER BY id ASC',
             { type: queryInterface.sequelize.QueryTypes.SELECT }
@@ -41,7 +70,7 @@ module.exports = {
         for (const issue of issues) {
             let revisionNumber = 1;
 
-            // First revision snapshot (without audit fields)
+            // Initial snapshot
             const initialSnapshot = {
                 title: issue.title,
                 description: issue.description,
@@ -49,14 +78,13 @@ module.exports = {
                 priority: issue.priority,
                 assignee: issue.assignee,
                 createdBy: issue.created_by
-                // createdAt excluded as per your requirements
             };
 
             revisions.push({
                 issue_id: issue.id,
                 revision_number: revisionNumber,
                 issue: JSON.stringify(initialSnapshot),
-                changes: JSON.stringify({}),
+                changes: JSON.stringify({}), // no changes for first revision
                 updated_by: issue.updated_by || issue.created_by,
                 updated_at: issue.updated_at ? new Date(issue.updated_at) : new Date(issue.created_at)
             });
@@ -66,29 +94,69 @@ module.exports = {
             for (let i = 1; i < totalRevisions; i++) {
                 revisionNumber++;
 
-                // Randomly generate changed fields
+                const lastSnapshot = JSON.parse(revisions[revisions.length - 1].issue);
                 const changedFields = {};
 
-                if (Math.random() < 0.6)
-                    changedFields.status = ['open', 'in_progress', 'resolved', 'closed'][Math.floor(Math.random() * 4)];
-                if (Math.random() < 0.5)
-                    changedFields.priority = ['low', 'medium', 'high', 'critical'][Math.floor(Math.random() * 4)];
-                if (Math.random() < 0.5)
-                    changedFields.description =
-                        'Updated: ' + (Math.random() < 0.5 ? 'Bug fixed partially.' : 'Investigating root cause.');
-                if (Math.random() < 0.4)
-                    changedFields.title = issue.title + (Math.random() < 0.5 ? ' - urgent' : ' - update');
-                if (Math.random() < 0.3)
-                    changedFields.assignee = Math.random() < 0.5 ? users[Math.floor(Math.random() * users.length)].id : null;
+                // Change status with probability and maintain priority compatibility
+                if (Math.random() < 0.6) {
+                    // Select a new status compatible with current priority (or fallback to all statuses)
+                    const validStatuses = priorityStatusRules[lastSnapshot.priority] || ['open', 'in_progress', 'resolved', 'closed'];
+                    // Randomly pick a different status than current
+                    let newStatus;
+                    do {
+                        newStatus = validStatuses[Math.floor(Math.random() * validStatuses.length)];
+                    } while (newStatus === lastSnapshot.status);
+                    changedFields.status = newStatus;
 
-                // Get previous snapshot object
-                const lastSnapshotRaw = revisions[revisions.length - 1].issue;
-                const lastSnapshot = JSON.parse(lastSnapshotRaw);
+                    // Update description accordingly
+                    const descOptions = descriptionFragments[newStatus] || ['Status updated.'];
+                    changedFields.description = lastSnapshot.description + ' ' + descOptions[Math.floor(Math.random() * descOptions.length)];
+                } else if (Math.random() < 0.4) {
+                    // Possibly update description with generic progress note
+                    const progressNotes = [
+                        'Work continues as planned.',
+                        'Additional logs collected.',
+                        'Awaiting user feedback.',
+                        'Testing fixes in staging environment.'
+                    ];
+                    changedFields.description = lastSnapshot.description + ' ' + progressNotes[Math.floor(Math.random() * progressNotes.length)];
+                }
 
-                // Merge previous snapshot with changed fields for new snapshot
+                // Change priority respecting priority-status rules
+                if (Math.random() < 0.5) {
+                    // Select priority compatible with current or changed status
+                    const currentStatus = changedFields.status || lastSnapshot.status;
+                    const possiblePriorities = Object.entries(priorityStatusRules)
+                        .filter(([, statuses]) => statuses.includes(currentStatus))
+                        .map(([priority]) => priority);
+
+                    let newPriority;
+                    do {
+                        newPriority = possiblePriorities[Math.floor(Math.random() * possiblePriorities.length)];
+                    } while (newPriority === lastSnapshot.priority);
+
+                    changedFields.priority = newPriority;
+                }
+
+                // Change title occasionally with suffixes
+                if (Math.random() < 0.3) {
+                    changedFields.title = lastSnapshot.title.replace(/ - (urgent|update)$/, '') +
+                        (Math.random() < 0.5 ? ' - urgent' : ' - update');
+                }
+
+                // Change assignee following status logic
+                if (Math.random() < 0.3) {
+                    if (changedFields.status === 'closed' || changedFields.status === 'resolved') {
+                        changedFields.assignee = null; // resolved/closed likely unassigned
+                    } else {
+                        changedFields.assignee = users[Math.floor(Math.random() * users.length)].id;
+                    }
+                }
+
+                // Merge snapshots
                 const newSnapshot = { ...lastSnapshot, ...changedFields };
 
-                // Calculate changes as deep diff between last and new snapshots
+                // Calculate deep changes object
                 const changes = deepDiff(lastSnapshot, newSnapshot);
 
                 const updatedBy = users[Math.floor(Math.random() * users.length)].id;
@@ -105,6 +173,21 @@ module.exports = {
                     updated_by: updatedBy,
                     updated_at: updatedAt
                 });
+
+                // Update issue table with latest snapshot values
+                await queryInterface.bulkUpdate(
+                    'issues',
+                    {
+                        title: newSnapshot.title,
+                        description: newSnapshot.description,
+                        status: newSnapshot.status,
+                        priority: newSnapshot.priority,
+                        assignee: newSnapshot.assignee,
+                        updated_by: updatedBy,
+                        updated_at: updatedAt
+                    },
+                    { id: issue.id }
+                );
             }
         }
 
