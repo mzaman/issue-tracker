@@ -1,7 +1,9 @@
 'use strict';
 
 const _ = require('lodash');
+const { faker } = require('@faker-js/faker');
 
+// Deep diff function to find changed fields between two snapshots
 const deepDiff = (obj1, obj2, prefix = '') => {
     const changes = {};
     const keys = new Set([...Object.keys(obj1 || {}), ...Object.keys(obj2 || {})]);
@@ -23,29 +25,103 @@ const deepDiff = (obj1, obj2, prefix = '') => {
     return changes;
 };
 
+// Description fragments grouped by status
 const descriptionFragments = {
     open: [
         'New issue reported.',
         'Needs triage and assignment.',
-        'Waiting for more info from reporter.'
+        'Waiting for more info from reporter.',
+        'Initial investigation pending.',
+        'Reported by user, unverified.',
+        'Reproducing the issue on staging.',
+        'Under review by support team.',
+        'Reported by QA.',
+        'Issue logged into tracker.',
+        'Pending prioritization.',
+        'User feedback requested.',
+        'Waiting on environment setup.',
+        'Blocked by dependency update.'
     ],
     in_progress: [
         'Currently investigating root cause.',
         'Attempting partial fixes.',
-        'Logs collected for debugging.'
+        'Logs collected for debugging.',
+        'Patch development underway.',
+        'Working on a hotfix.',
+        'Collaboration with QA initiated.',
+        'Testing in local environment.',
+        'Root cause analysis in progress.',
+        'Code review ongoing.',
+        'Applying workaround.',
+        'Debugging intermittent failure.',
+        'Preparing fix for review.'
     ],
     resolved: [
         'Bug fixed and verified.',
         'Resolved after patch deployment.',
-        'Issue marked resolved, pending close.'
+        'Issue marked resolved, pending close.',
+        'Fix merged into main branch.',
+        'QA verified fix successfully.',
+        'Patch scheduled for production.',
+        'Root cause identified and addressed.',
+        'Code pushed to master branch.',
+        'Issue verified by customer.',
+        'Resolved with rollback.',
+        'Temporary workaround implemented.',
+        'Fix tested in staging.'
     ],
     closed: [
         'Issue closed after QA confirmation.',
         'No further action required.',
-        'Closed as duplicate or invalid.'
+        'Closed as duplicate or invalid.',
+        'Marked as won’t fix by product owner.',
+        'Closed due to inactivity.',
+        'Resolved and archived.',
+        'Issue rejected as out of scope.',
+        'Closed following user cancellation.',
+        'Closed as fixed in newer version.',
+        'Resolved and auto-closed.',
+        'Closed after release deployment.',
+        'Archived per policy.'
     ]
 };
 
+// Grouped title suffixes by issue status — pick suffix according to current/new status
+const titleSuffixGroups = {
+    open: [
+        'needs review',
+        'pending',
+        'follow-up',
+        'investigation',
+        'awaiting input',
+        'triage needed'
+    ],
+    in_progress: [
+        'urgent',
+        'escalated',
+        'hotfix',
+        'bugfix',
+        'patch',
+        'investigating',
+        'in review'
+    ],
+    resolved: [
+        'resolved',
+        'fix verified',
+        'QA approved',
+        'ready for close',
+        'patch deployed'
+    ],
+    closed: [
+        'closed',
+        'archived',
+        'no action required',
+        'duplicate',
+        'won’t fix'
+    ]
+};
+
+// Priority to allowed statuses
 const priorityStatusRules = {
     critical: ['open', 'in_progress'],
     high: ['open', 'in_progress', 'resolved'],
@@ -53,15 +129,21 @@ const priorityStatusRules = {
     low: ['open', 'resolved', 'closed']
 };
 
+const suffixCleanRegex = new RegExp(
+    ` - (${Object.values(titleSuffixGroups).flat().map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})$`,
+    'i'
+);
+
 module.exports = {
     up: async (queryInterface, Sequelize) => {
+        // Fetch issues and users
         const issues = await queryInterface.sequelize.query(
             'SELECT id, created_by, created_at, updated_by, updated_at, title, description, status, priority, assignee FROM issues ORDER BY id ASC',
             { type: queryInterface.sequelize.QueryTypes.SELECT }
         );
 
         const users = await queryInterface.sequelize.query(
-            'SELECT id, email FROM users ORDER BY id ASC',
+            'SELECT id FROM users ORDER BY id ASC',
             { type: queryInterface.sequelize.QueryTypes.SELECT }
         );
 
@@ -84,86 +166,114 @@ module.exports = {
                 issue_id: issue.id,
                 revision_number: revisionNumber,
                 issue: JSON.stringify(initialSnapshot),
-                changes: JSON.stringify({}), // no changes for first revision
+                changes: JSON.stringify({}), // no changes in initial revision
                 updated_by: issue.updated_by || issue.created_by,
                 updated_at: issue.updated_at ? new Date(issue.updated_at) : new Date(issue.created_at)
             });
 
             const totalRevisions = 5 + Math.floor(Math.random() * 5);
 
-            for (let i = 1; i < totalRevisions; i++) {
-                revisionNumber++;
+            const createdBy = issue.created_by;
+            const originalAssignee = issue.assignee;
+            const isSameUser = createdBy === originalAssignee;
 
-                const lastSnapshot = JSON.parse(revisions[revisions.length - 1].issue);
+            // Store last snapshot and last updated time to build on
+            let lastSnapshot = initialSnapshot;
+            let lastUpdatedAt = revisions[revisions.length - 1].updated_at;
+
+            for (let i = 1; i < totalRevisions; i++) {
+                revisionNumber = i + 1;
                 const changedFields = {};
 
-                // Change status with probability and maintain priority compatibility
-                if (Math.random() < 0.6) {
-                    // Select a new status compatible with current priority (or fallback to all statuses)
-                    const validStatuses = priorityStatusRules[lastSnapshot.priority] || ['open', 'in_progress', 'resolved', 'closed'];
-                    // Randomly pick a different status than current
-                    let newStatus;
-                    do {
-                        newStatus = validStatuses[Math.floor(Math.random() * validStatuses.length)];
-                    } while (newStatus === lastSnapshot.status);
-                    changedFields.status = newStatus;
-
-                    // Update description accordingly
-                    const descOptions = descriptionFragments[newStatus] || ['Status updated.'];
-                    changedFields.description = lastSnapshot.description + ' ' + descOptions[Math.floor(Math.random() * descOptions.length)];
-                } else if (Math.random() < 0.4) {
-                    // Possibly update description with generic progress note
-                    const progressNotes = [
-                        'Work continues as planned.',
-                        'Additional logs collected.',
-                        'Awaiting user feedback.',
-                        'Testing fixes in staging environment.'
-                    ];
-                    changedFields.description = lastSnapshot.description + ' ' + progressNotes[Math.floor(Math.random() * progressNotes.length)];
-                }
-
-                // Change priority respecting priority-status rules
-                if (Math.random() < 0.5) {
-                    // Select priority compatible with current or changed status
-                    const currentStatus = changedFields.status || lastSnapshot.status;
-                    const possiblePriorities = Object.entries(priorityStatusRules)
-                        .filter(([, statuses]) => statuses.includes(currentStatus))
-                        .map(([priority]) => priority);
-
-                    let newPriority;
-                    do {
-                        newPriority = possiblePriorities[Math.floor(Math.random() * possiblePriorities.length)];
-                    } while (newPriority === lastSnapshot.priority);
-
-                    changedFields.priority = newPriority;
-                }
-
-                // Change title occasionally with suffixes
-                if (Math.random() < 0.3) {
-                    changedFields.title = lastSnapshot.title.replace(/ - (urgent|update)$/, '') +
-                        (Math.random() < 0.5 ? ' - urgent' : ' - update');
-                }
-
-                // Change assignee following status logic
-                if (Math.random() < 0.3) {
-                    if (changedFields.status === 'closed' || changedFields.status === 'resolved') {
-                        changedFields.assignee = null; // resolved/closed likely unassigned
+                // Handle 2nd and 3rd revision special cases
+                if (i === 1) {
+                    if (isSameUser) {
+                        changedFields.status = 'in_progress';
+                        changedFields.description = (lastSnapshot.description || '') + ' ' +
+                            faker.helpers.arrayElement(descriptionFragments.in_progress);
                     } else {
+                        let newAssignee;
+                        do {
+                            newAssignee = users[Math.floor(Math.random() * users.length)].id;
+                        } while (newAssignee === createdBy);
+                        changedFields.assignee = newAssignee;
+                        changedFields.description = (lastSnapshot.description || '') + ' Assignee updated.';
+                    }
+                } else if (i === 2 && !isSameUser) { // 3rd revision
+                    changedFields.status = 'in_progress';
+                    changedFields.description = (lastSnapshot.description || '') + ' ' +
+                        faker.helpers.arrayElement(descriptionFragments.in_progress);
+                } else {
+                    // Other revisions - realistic random changes with business rules
+
+                    if (Math.random() < 0.6) {
+                        const validStatuses = priorityStatusRules[lastSnapshot.priority] || ['open', 'in_progress', 'resolved', 'closed'];
+                        let newStatus;
+
+                        do {
+                            newStatus = faker.helpers.arrayElement(validStatuses);
+
+                            // Only allow closed if last status was resolved
+                            if (newStatus === 'closed' && lastSnapshot.status !== 'resolved') {
+                                newStatus = lastSnapshot.status; // revert and retry
+                            }
+                        } while (newStatus === lastSnapshot.status);
+
+                        changedFields.status = newStatus;
+
+                        if (newStatus === 'closed') {
+                            changedFields.assignee = null;
+                        }
+
+                        changedFields.description = (lastSnapshot.description || '') + ' ' +
+                            faker.helpers.arrayElement(descriptionFragments[newStatus]);
+                    }
+
+                    if (Math.random() < 0.5) {
+                        const priorities = Object.keys(priorityStatusRules);
+                        let newPriority;
+                        do {
+                            newPriority = faker.helpers.arrayElement(priorities);
+                        } while (newPriority === lastSnapshot.priority);
+                        changedFields.priority = newPriority;
+                    }
+
+                    // Change title with appropriate suffix from titleSuffixGroups for new or last status
+                    if (Math.random() < 0.4) {
+                        const baseTitle = lastSnapshot.title.replace(suffixCleanRegex, '');
+                        const statusForSuffix = changedFields.status || lastSnapshot.status;
+                        const suffixes = titleSuffixGroups[statusForSuffix] || ['update'];
+                        const suffix = faker.helpers.arrayElement(suffixes);
+                        changedFields.title = `${baseTitle} - ${suffix}`;
+                    }
+
+                    if ((changedFields.status === 'resolved') && lastSnapshot.assignee) {
+                        changedFields._useAssigneeAsUpdater = true;
+                    } else {
+                        changedFields._useAssigneeAsUpdater = false;
+                    }
+
+                    if (Math.random() < 0.3 && (changedFields.status || lastSnapshot.status) !== 'closed') {
                         changedFields.assignee = users[Math.floor(Math.random() * users.length)].id;
                     }
                 }
 
-                // Merge snapshots
                 const newSnapshot = { ...lastSnapshot, ...changedFields };
+                delete newSnapshot._useAssigneeAsUpdater;
 
-                // Calculate deep changes object
                 const changes = deepDiff(lastSnapshot, newSnapshot);
 
-                const updatedBy = users[Math.floor(Math.random() * users.length)].id;
+                if (Object.keys(changes).length === 0) continue; // skip empty change
 
-                const lastUpdatedAtRaw = revisions[revisions.length - 1].updated_at;
-                const lastUpdatedAt = lastUpdatedAtRaw instanceof Date ? lastUpdatedAtRaw : new Date(lastUpdatedAtRaw);
-                const updatedAt = new Date(lastUpdatedAt.getTime() + (24 * 60 * 60 * 1000) * (1 + Math.floor(Math.random() * 3)));
+                let updatedBy;
+                if (changedFields._useAssigneeAsUpdater) {
+                    updatedBy = newSnapshot.assignee || users[Math.floor(Math.random() * users.length)].id;
+                } else {
+                    updatedBy = users[Math.floor(Math.random() * users.length)].id;
+                }
+
+                const lastUpdatedTime = lastUpdatedAt instanceof Date ? lastUpdatedAt : new Date(lastUpdatedAt);
+                const updatedAt = new Date(lastUpdatedTime.getTime() + (24 * 60 * 60 * 1000) * (1 + Math.floor(Math.random() * 3)));
 
                 revisions.push({
                     issue_id: issue.id,
@@ -174,7 +284,7 @@ module.exports = {
                     updated_at: updatedAt
                 });
 
-                // Update issue table with latest snapshot values
+                // Update issues table with latest snapshot
                 await queryInterface.bulkUpdate(
                     'issues',
                     {
@@ -188,6 +298,9 @@ module.exports = {
                     },
                     { id: issue.id }
                 );
+
+                lastSnapshot = newSnapshot;
+                lastUpdatedAt = updatedAt;
             }
         }
 
