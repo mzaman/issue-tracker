@@ -18,12 +18,12 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/",
-					"protocol": "http",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/",
+					"protocol": "{{protocol}}",
 					"host": [
-						"localhost"
+						"{{hostname}}"
 					],
-					"port": "8080",
+					"port": "{{port}}",
 					"path": [
 						""
 					]
@@ -33,6 +33,18 @@
 		},
 		{
 			"name": "Health Check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [
@@ -43,10 +55,12 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/health",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/health",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
 						"health"
 					]
@@ -73,11 +87,15 @@
 					"raw": "{\n    \"title\": \"Bug in issue-service\",\n    \"description\": \"Ah snap :(\",\n    \"status\": \"open\",\n    \"priority\": \"medium\",\n    \"assignee\": null\n}"
 				},
 				"url": {
-					"raw": "{{base_url}}/issues",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues"
 					]
 				}
@@ -95,11 +113,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues?page=1&pageSize=5&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=id&sortOrder=desc&search=",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues?page=1&pageSize=5&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=id&sortOrder=desc&search=",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues"
 					],
 					"query": [
@@ -147,11 +169,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/36",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/36",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues",
 						"36"
 					]
@@ -178,11 +204,15 @@
 					"raw": "{\n    \"title\": \"Bug in issue-service\",\n    \"description\": \"It does not generate revisions\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\",\n    \"assignee\": 3\n}"
 				},
 				"url": {
-					"raw": "{{base_url}}/issues/36",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/36",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues",
 						"36"
 					]
@@ -201,11 +231,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/36/revisions",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/36/revisions",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues",
 						"36",
 						"revisions"
@@ -242,11 +276,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/login",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/auth/login",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"auth",
 						"login"
 					]
 				}
@@ -288,11 +327,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/1",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues",
 						"1"
 					]
@@ -314,11 +357,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/1",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues",
 						"1"
 					]
@@ -347,11 +394,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/1",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues",
 						"1"
 					]
@@ -380,11 +431,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/1",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues",
 						"1"
 					]
@@ -403,11 +458,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/36/revisions/compare?from=1&to=10&order=desc",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/36/revisions/compare?from=1&to=10&order=desc",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues",
 						"36",
 						"revisions",
@@ -442,11 +501,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues?page=1&pageSize=15&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=priority&sortOrder=desc&search=",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues?page=1&pageSize=15&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=priority&sortOrder=desc&search=",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues"
 					],
 					"query": [
@@ -494,11 +557,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/1",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues",
 						"1"
 					]
@@ -517,11 +584,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/1/revisions",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1/revisions",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues",
 						"1",
 						"revisions"
@@ -541,11 +612,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/1/revisions/compare?from=1&to=10&order=asc",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1/revisions/compare?from=1&to=10&order=asc",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues",
 						"1",
 						"revisions",
@@ -575,7 +650,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODE1NjI5NSwiZXhwIjoxNzQ4MTY3MDk1fQ.CZaBYpP1_a3waQL_kVbwtPCUqWkuqAWzl31cIKZpBTg",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODE4MTA2NCwiZXhwIjoxNzQ4MTkxODY0fQ.RP08UQYZSB3E_f2dMGRqe_51nqolNMEEmIHNH0jQXAk",
 				"type": "string"
 			}
 		]
@@ -604,8 +679,18 @@
 	],
 	"variable": [
 		{
-			"key": "jwt_token",
-			"value": ""
+			"key": "protocol",
+			"value": "http"
+		},
+		{
+			"key": "hostname",
+			"value": "localhost",
+			"type": "string"
+		},
+		{
+			"key": "port",
+			"value": "8080",
+			"type": "string"
 		},
 		{
 			"key": "client_id",
@@ -614,6 +699,16 @@
 		{
 			"key": "base_url",
 			"value": "http://localhost:8080"
+		},
+		{
+			"key": "api_prefix",
+			"value": "api",
+			"type": "string"
+		},
+		{
+			"key": "api_version",
+			"value": "v1",
+			"type": "string"
 		}
 	]
 }

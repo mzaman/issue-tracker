@@ -1,10 +1,10 @@
 'use strict';
 
 const { Op } = require('sequelize');
-const respond = require('./responses');
-const User = require('../models/user');
-const Issue = require('../models/issue');
-const Revision = require('../models/revision');
+const respond = require('../../utils/responses');
+const User = require('../../models/user');
+const Issue = require('../../models/issue');
+const Revision = require('../../models/revision');
 const _ = require('lodash');
 
 // const baseUrl = 'http://localhost:8080'; // Commented as unused variable, good to avoid hard coded values

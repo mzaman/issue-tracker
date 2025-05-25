@@ -1,6 +1,6 @@
 'use strict';
 
-const respond = require('./responses');
+const respond = require('../../utils/responses');
 
 module.exports = (context) => {
   respond.success(context, {

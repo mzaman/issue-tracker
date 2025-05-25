@@ -3,4 +3,4 @@ set -e
 
 source ./cmd/env ${1:-dev}
 
-docker exec -it $(docker-compose -f docker-compose.$ENV_FILE.yml ps -q app) node auth/generateToken.js
+docker exec -it $(docker-compose -f docker-compose.$ENV_FILE.yml ps -q app) node src/utils/generateToken.js

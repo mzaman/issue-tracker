@@ -1,7 +1,7 @@
 // middleware/errorHandler.js
 'use strict';
 
-const respond = require('../lib/api/responses');
+const respond = require('../utils/responses');
 const jwt = require('jsonwebtoken');
 
 module.exports = async (ctx, next) => {

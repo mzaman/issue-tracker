@@ -1,12 +1,12 @@
 'use strict';
 
-const respond = require('../lib/api/responses');
+const respond = require('../utils/responses');
 const jwt = require('koa-jwt');
 
 const secret = process.env.JWT_SECRET || 'supersecretkey123';
 
 const jwtMiddleware = jwt({ secret }).unless({
-    path: ['/', '/health', '/login'], // public paths
+    path: ['/', '/health', '/api/v1/auth/login', '/api/v2/auth/login'], // public paths
 });
 
 const clientIdMiddleware = async (ctx, next) => {
