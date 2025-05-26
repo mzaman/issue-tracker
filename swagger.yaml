@@ -69,13 +69,13 @@ servers:
       protocol:
         default: https
       hostname:
-        default: api.testilo.com
+        default: localhost
       port:
         default: '8080'
 
 security:
   - BearerAuth: []
-  - ClientIdAuth: []
+  - X-Client-ID: []
 
 tags:
   - name: System
@@ -157,6 +157,42 @@ paths:
           description: Invalid credentials
 
   /issues:
+    post:
+      tags:
+        - Issues
+      summary: "Create a new issue (Task 1)"
+      description: Creates a new issue with a title, description, and optional assignee.
+      operationId: createIssue
+      security:
+        - BearerAuth: []
+        - X-Client-ID: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIssueRequest'
+            example:
+              title: "Bug in issue-service"
+              description: "Ah snap :("
+              status: "open"
+              priority: "medium"
+              assignee: null
+      responses:
+        '201':
+          description: Issue successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueResponse'
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          $ref: '#/components/responses/InvalidClientId'
+        '401':
+          description: Unauthorized - Invalid or expired token
+        '500':
+          description: Internal Server Error
     get:
       summary: "Retrieve all issues (Task 2)"
       tags: [Issues]
@@ -211,115 +247,55 @@ paths:
           description: Issue not found
 
     put:
-      tags: [Issues]
-      summary: "Update an issue (Task 3)"
-      operationId: replaceIssue
+      tags:
+        - Issues
+      summary: Update an existing issue
+      description: Update the title, description, status, priority, or assignee of a specific issue.
+      operationId: updateIssue
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: string
+          description: Unique identifier for the issue to update.
+        - name: X-Client-ID
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Unique client ID for API access.
+      security:
+        - BearerAuth: []
+        - X-Client-ID: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Issue'
+              $ref: '#/components/schemas/UpdateIssueRequest'
+            example:
+              title: "UI bug in dashboard"
+              description: "Fix the alignment in header"
+              status: "in_progress"
+              priority: "high"
+              assignee: "user123"
       responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
         '200':
-          description: Issue replaced
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BaseResponse'
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Issue not found
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
-    # patch:
-    #   tags: [Issues]
-    #   summary: "[T4] Partially update issue"
-    #   operationId: patchIssue
-    #   parameters:
-    #     - in: path
-    #       name: id
-    #       required: true
-    #       schema:
-    #         type: string
-    #   requestBody:
-    #     required: true
-    #     content:
-    #       application/json:
-    #         schema:
-    #           type: object
-    #           additionalProperties: true
-    #   responses:
-    #     '400':
-    #       $ref: '#/components/responses/MissingClientIdHeader'
-    #     '403':
-    #       $ref: '#/components/responses/InvalidClientId'
-    #     '200':
-    #       description: Issue updated
-    #       content:
-    #         application/json:
-    #           schema:
-    #             $ref: '#/components/schemas/BaseResponse'
-    #     '404':
-    #       description: Issue not found
-
-    # delete:
-    #   tags: [Issues]
-    #   summary: "[T6] Delete issue"
-    #   operationId: deleteIssue
-    #   parameters:
-    #     - in: path
-    #       name: id
-    #       required: true
-    #       schema:
-    #         type: string
-    #   responses:
-    #     '400':
-    #       $ref: '#/components/responses/MissingClientIdHeader'
-    #     '403':
-    #       $ref: '#/components/responses/InvalidClientId'
-    #     '204':
-    #       description: Issue deleted
-    #     '404':
-    #       description: Issue not found
-
-  # /issues/filter:
-  #   post:
-  #     tags: [Issues]
-  #     summary: "[T7] Filter issues by status and priority"
-  #     operationId: filterIssues
-  #     requestBody:
-  #       required: true
-  #       content:
-  #         application/json:
-  #           schema:
-  #             $ref: '#/components/schemas/IssueFilter'
-  #     responses:
-  #       '400':
-  #         $ref: '#/components/responses/MissingClientIdHeader'
-  #       '403':
-  #         $ref: '#/components/responses/InvalidClientId'
-  #       '200':
-  #         description: Matching issues
-  #         content:
-  #           application/json:
-  #             schema:
-  #               allOf:
-  #                 - $ref: '#/components/schemas/BaseResponse'
-  #                 - type: object
-  #                   properties:
-  #                     data:
-  #                       type: array
-  #                       items:
-  #                         $ref: '#/components/schemas/Issue'
 
 components:
   securitySchemes:
@@ -327,39 +303,288 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    ClientIdAuth:
+    X-Client-ID:
       type: apiKey
       in: header
       name: X-Client-ID
 
   responses:
-    MissingClientIdHeader:
-      description: Missing `X-Client-ID` header
+    Success:
+      description: Successful operation
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/MissingClientIdError'
+            $ref: '#/components/schemas/BaseResponse'
+            
+    Created:
+      description: Resource created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+
+    Accepted:
+      description: Request accepted for processing
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+
+    NoContent:
+      description: No content to return
+      content: {}
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+
+    Conflict:
+      description: Conflict occurred (e.g., duplicate resource)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+
+    UnprocessableEntity:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+
+    TooManyRequests:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+
+    ServiceUnavailable:
+      description: Service temporarily unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+
+    Unauthorized:
+      description: Authentication error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedResponse'
+
+    Forbidden:
+      description: Forbidden - Invalid X-Client-ID
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenResponse'
+
+    BadRequest:
+      description: Bad Request - Missing or invalid parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequestResponse'
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InternalServerErrorResponse'
+            
+    MissingClientIdHeader:
+      description: Missing X-Client-ID header
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            type: "about:blank"
+            title: "Missing X-Client-ID header"
+            status: 400
+            detail: "Missing X-Client-ID header"
+            instance: "/api/v1/issues/1"
+            errors:
+              - field: "x-client-id"
+                message: "X-Client-ID header is required"
+                code: "missing_client_id"
+            success: false
 
     InvalidClientId:
-      description: Invalid `X-Client-ID` header value
+      description: Invalid X-Client-ID header
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/InvalidClientIdError'
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            type: "about:blank"
+            title: "Invalid X-Client-ID"
+            status: 403
+            detail: "Invalid X-Client-ID"
+            instance: "/api/v1/issues/1"
+            errors: null
+            success: false
 
   schemas:
+    AuthErrorTypeEnum:
+      type: string
+      description: Type of authentication error
+      enum:
+        - about:blank
+        - token-expired
+        - invalid-token
+      example: about:blank
+
+    ClientErrorTypeEnum:
+      type: string
+      description: Type of client error
+      enum:
+        - about:blank
+        - missing-client-id
+        - invalid-client-id
+      example: missing-client-id
+
+    BaseResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          nullable: true
+        errors:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: x-client-id
+              message:
+                type: string
+                example: X-Client-ID header is required
+              code:
+                type: string
+                example: missing_client_id
+
+    UnauthorizedResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            type:
+              $ref: '#/components/schemas/AuthErrorTypeEnum'
+            title:
+              type: string
+              example: Authentication Error
+            status:
+              type: integer
+              example: 401
+            detail:
+              type: string
+              example: Authentication Error
+            instance:
+              type: string
+              example: /api/v1/issues/1
+
+    ForbiddenResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            type:
+              $ref: '#/components/schemas/ClientErrorTypeEnum'
+            title:
+              type: string
+              example: Invalid X-Client-ID
+            status:
+              type: integer
+              example: 403
+            detail:
+              type: string
+              example: Invalid X-Client-ID
+            instance:
+              type: string
+              example: /api/v1/issues/1
+
+    BadRequestResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            type:
+              $ref: '#/components/schemas/ClientErrorTypeEnum'
+            title:
+              type: string
+              example: Missing X-Client-ID header
+            status:
+              type: integer
+              example: 400
+            detail:
+              type: string
+              example: Missing X-Client-ID header
+            instance:
+              type: string
+              example: /api/v1/issues/1
+
+    InternalServerErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            type:
+              type: string
+              example: about:blank
+            title:
+              type: string
+              example: Internal Server Error
+            status:
+              type: integer
+              example: 500
+            detail:
+              type: string
+              example: An unexpected error occurred
+            instance:
+              type: string
+              example: /api/v1/issues/1
+    
     ErrorDetail:
       type: object
       properties:
         field:
           type: string
-          example: x-client-id
         message:
           type: string
-          example: X-Client-ID header is required
         code:
           type: string
-          example: missing_client_id
+
+    ErrorResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          example: "about:blank"
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+        success:
+          type: boolean
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
 
     MissingClientIdError:
       type: object
@@ -414,21 +639,6 @@ components:
           type: boolean
           example: false
 
-    BaseResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        message:
-          type: string
-          example: Operation successful
-        errors:
-          type: array
-          items:
-            type: string
-          example: []
-
     DiscoveryResponse:
       allOf:
         - $ref: '#/components/schemas/BaseResponse'
@@ -467,6 +677,99 @@ components:
                 token:
                   type: string
                   example: eyJhbGciOiJIUzI1NiIsInR5cCI...
+
+    CreateIssueRequest:
+      type: object
+      required:
+        - title
+        - description
+        - status
+        - priority
+      properties:
+        title:
+          type: string
+          example: "Bug in issue-service"
+        description:
+          type: string
+          example: "Ah snap :("
+        status:
+          $ref: '#/components/schemas/IssueStatusEnum'
+        priority:
+          $ref: '#/components/schemas/IssuePriorityEnum'
+        assignee:
+          type: string
+          nullable: true
+          example: "123"
+
+    UpdateIssueRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/IssueStatusEnum'
+        priority:
+          $ref: '#/components/schemas/IssuePriorityEnum'
+        assignee:
+          type: string
+          nullable: true
+      required:
+        - title
+        - description
+
+    IssueStatusEnum:
+      type: string
+      description: Status of the issue
+      enum:
+        - open
+        - in_progress
+        - resolved
+        - closed
+      example: "open"
+
+    IssuePriorityEnum:
+      type: string
+      description: Priority of the issue
+      enum:
+        - low
+        - medium
+        - high
+        - critical
+      example: "medium"
+    
+
+
+    IssueResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: "issue_001"
+                title:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+                priority:
+                  type: string
+                assignee:
+                  type: string
+                  nullable: true
+                createdAt:
+                  type: string
+                  format: date-time
+                updatedAt:
+                  type: string
+                  format: date-time
 
     Issue:
       type: object
