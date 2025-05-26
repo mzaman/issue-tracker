@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Trail Day REST API - Issue Tracker API
+  title: Trial Day REST API - Issue Tracker API
   version: 1.0.0
   description: |
     This API allows clients to perform discovery, health checks, and issue tracking.
@@ -134,7 +134,7 @@ paths:
   /auth/login:
     post:
       tags: [Auth]
-      summary: "User login and token generation (Task 5)"
+      summary: "User login and token generation"
       operationId: loginUser
       requestBody:
         required: true
@@ -160,7 +160,7 @@ paths:
     post:
       tags:
         - Issues
-      summary: "Create a new issue (Task 1)"
+      summary: "Create a new issue"
       description: Creates a new issue with a title, description, and optional assignee.
       operationId: createIssue
       security:
@@ -202,12 +202,6 @@ paths:
         Retrieve a paginated list of issues filtered by status, priority, and searchable by title/description. Results are sortable and support client authentication.
       operationId: getAllIssues
       parameters:
-        - name: X-Client-ID
-          in: header
-          required: true
-          schema:
-            type: string
-          description: Unique client ID for API access
         - name: page
           in: query
           required: false
@@ -287,7 +281,7 @@ paths:
   /issues/{id}:
     get:
       tags: [Issues]
-      summary: "Get issue by ID (Task 2)"
+      summary: "Get issue by ID"
       operationId: getIssueById
       parameters:
         - in: path
@@ -364,6 +358,80 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /issues/{id}/revisions:
+    get:
+      summary: Get revision history of an issue
+      description: Returns a list of all revisions for a specific issue, including the full issue snapshot and changes per revision.
+      tags:
+        - Issues
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique ID of the issue
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully retrieved revision history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetIssueRevisionsResponse'
+        '404':
+          description: Issue not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+  /issues/{id}/revisions/compare:
+    get:
+      summary: Compare issue revisions
+      description: Compares two revisions of an issue and returns the changes between them along with a list of intermediate revisions.
+      tags:
+        - Issues
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique ID of the issue
+          schema:
+            type: integer
+        - name: from
+          in: query
+          required: true
+          description: Starting revision number for comparison
+          schema:
+            type: integer
+        - name: to
+          in: query
+          required: true
+          description: Ending revision number for comparison
+          schema:
+            type: integer
+        - name: order
+          in: query
+          required: false
+          description: Order of revisions (asc or desc)
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        '200':
+          description: Successfully compared revisions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompareRevisionsResponse'
+        '404':
+          description: Issue or revisions not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   securitySchemes:
@@ -908,12 +976,102 @@ components:
           type: string
           format: date-time
 
-    IssueFilter:
+    GetIssueRevisionsResponse:
       type: object
       properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/IssueRevision'
+        errors:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ErrorObject'
+
+    IssueRevision:
+      type: object
+      properties:
+        revisionNumber:
+          type: integer
+          description: Sequential revision number
+        issue:
+          $ref: '#/components/schemas/IssueSnapshot'
+        changes:
+          type: object
+          description: Fields that changed in this revision
+          additionalProperties:
+            type: string
+        updatedBy:
+          type: integer
+          description: ID of the user who made the update
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the update
+
+    IssueSnapshot:
+      type: object
+      properties:
+        title:
+          type: string
         status:
           type: string
-          example: open
+          enum: [open, in_progress, resolved, closed]
+        assignee:
+          type: integer
+          nullable: true
         priority:
           type: string
-          example: high
+          enum: [low, medium, high, critical]
+        createdBy:
+          type: integer
+        description:
+          type: string
+          
+    CompareRevisionsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Request succeeded
+        data:
+          type: object
+          properties:
+            before:
+              $ref: '#/components/schemas/IssueSnapshot'
+            after:
+              $ref: '#/components/schemas/IssueSnapshot'
+            changes:
+              type: object
+              additionalProperties:
+                type: string
+              description: Differences between the two revisions
+            revisions:
+              type: array
+              items:
+                $ref: '#/components/schemas/IssueRevision'
+        errors:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ErrorObject'
+    # ErrorResponse:
+    #   type: object
+    #   properties:
+    #     success:
+    #       type: boolean
+    #       example: false
+    #     message:
+    #       type: string
+    #     errors:
+    #       type: array
+    #       items:
+    #         $ref: '#/components/schemas/ErrorObject'
