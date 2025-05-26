@@ -1,0 +1,877 @@
+{
+	"id": "b6a20bd3-5577-411c-bb51-b65d898d6715",
+	"name": "Trail Day REST API",
+	"timestamp": "2025-05-26T07:24:57.015Z",
+	"collection_id": "697454-4b05dfb0-7636-447d-a649-f2ec4e9f01f4",
+	"folder_id": 0,
+	"environment_id": "697454-9e823d57-4ed7-4933-b495-4ea6de3da7d6",
+	"totalPass": 58,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-05-26T07:24:56.142Z",
+	"totalFail": 12,
+	"results": [
+		{
+			"id": "730f5e44-771a-4f63-9261-21193de46d67",
+			"name": "Discovery",
+			"url": "http://localhost:8080/",
+			"time": 5,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response has the required fields": true,
+				"Discovery field is present in the response data": true,
+				"Success field is a boolean value": true,
+				"Content-Type header is application/json": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Discovery field is present in the response data": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Success field is a boolean value": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response has the required fields": true,
+					"Discovery field is present in the response data": true,
+					"Success field is a boolean value": true,
+					"Content-Type header is application/json": true
+				}
+			]
+		},
+		{
+			"id": "cb0dbd69-1074-4925-8935-0a8a0dbf3e4f",
+			"name": "Health Check",
+			"url": "http://localhost:8080/health",
+			"time": 5,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content-Type is application/json": true,
+				"Success field should exist and be a boolean": true,
+				"Data object contains message and version fields": true,
+				"Errors should be null or empty": false
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Success field should exist and be a boolean": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Data object contains message and version fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Errors should be null or empty": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content-Type is application/json": true,
+					"Success field should exist and be a boolean": true,
+					"Data object contains message and version fields": true,
+					"Errors should be null or empty": false
+				}
+			]
+		},
+		{
+			"id": "0acc4b45-02b7-4584-9096-b30037238bb0",
+			"name": "Task 1: Create New Issue (Please login first) *",
+			"url": "http://localhost:8080/api/v1/issues",
+			"time": 8,
+			"responseCode": {
+				"code": 409,
+				"name": "Conflict"
+			},
+			"tests": {
+				"Response status code is 201": false,
+				"Success field should be true": false,
+				"Data object has the required fields": false,
+				"Errors field should be null": true,
+				"Created_at and updated_at fields are in valid date format": false
+			},
+			"testPassFailCounts": {
+				"Response status code is 201": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Success field should be true": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Data object has the required fields": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Errors field should be null": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Created_at and updated_at fields are in valid date format": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				8
+			],
+			"allTests": [
+				{
+					"Response status code is 201": false,
+					"Success field should be true": false,
+					"Data object has the required fields": false,
+					"Errors field should be null": true,
+					"Created_at and updated_at fields are in valid date format": false
+				}
+			]
+		},
+		{
+			"id": "fc6a9bc7-9606-471c-993a-3860fe54fe7c",
+			"name": "Task 2: Get Issues",
+			"url": "http://localhost:8080/api/v1/issues?page=1&pageSize=5&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=id&sortOrder=desc&search=",
+			"time": 8,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content type is application/json": true,
+				"Success field should exist and be true": true,
+				"Data object contains 'issues' and 'pagination' properties": true,
+				"Issues array is not empty and contains required fields": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content type is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Success field should exist and be true": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Data object contains 'issues' and 'pagination' properties": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Issues array is not empty and contains required fields": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				8
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content type is application/json": true,
+					"Success field should exist and be true": true,
+					"Data object contains 'issues' and 'pagination' properties": true,
+					"Issues array is not empty and contains required fields": true
+				}
+			]
+		},
+		{
+			"id": "f043aaf1-f838-4b84-8cd6-d9211e70c769",
+			"name": "Task 2.1: Get Issue by ID (36)",
+			"url": "http://localhost:8080/api/v1/issues/36",
+			"time": 4,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content-Type header is application/json": true,
+				"Validate the data object properties": true,
+				"Assignee email is in a valid format": true,
+				"Created by email is in a valid format": true,
+				"Updated by email is in a valid format": true,
+				"Verify that errors is null or an empty array": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Validate the data object properties": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Assignee email is in a valid format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Created by email is in a valid format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Updated by email is in a valid format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Verify that errors is null or an empty array": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content-Type header is application/json": true,
+					"Validate the data object properties": true,
+					"Assignee email is in a valid format": true,
+					"Created by email is in a valid format": true,
+					"Updated by email is in a valid format": true,
+					"Verify that errors is null or an empty array": true
+				}
+			]
+		},
+		{
+			"id": "ab0acc33-145c-47de-81ce-2b18467c5b56",
+			"name": "Task 3: Update Issue with ID (36)",
+			"url": "http://localhost:8080/api/v1/issues/36",
+			"time": 10,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content type is application/json": true,
+				"Validate the data object for required fields": true,
+				"Success field is a boolean": true,
+				"Message field should be a non-empty string": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content type is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Validate the data object for required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Success field is a boolean": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Message field should be a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				10
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content type is application/json": true,
+					"Validate the data object for required fields": true,
+					"Success field is a boolean": true,
+					"Message field should be a non-empty string": true
+				}
+			]
+		},
+		{
+			"id": "e4ddc3e8-8ae3-41a2-a8dd-1aaed733299f",
+			"name": "Task 4: List Revisions (Issue ID: 36)",
+			"url": "http://localhost:8080/api/v1/issues/36/revisions",
+			"time": 3,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content-Type header is application/json": true,
+				"Validate 'success' field is true": true,
+				"Data array is present and contains expected number of elements": false,
+				"Validate revisionNumber is a non-negative integer": true,
+				"Validate issue object contains non-empty strings for title, status, and priority": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Validate 'success' field is true": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Data array is present and contains expected number of elements": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Validate revisionNumber is a non-negative integer": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Validate issue object contains non-empty strings for title, status, and priority": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content-Type header is application/json": true,
+					"Validate 'success' field is true": true,
+					"Data array is present and contains expected number of elements": false,
+					"Validate revisionNumber is a non-negative integer": true,
+					"Validate issue object contains non-empty strings for title, status, and priority": true
+				}
+			]
+		},
+		{
+			"id": "df1e8abd-6b5a-44d5-9890-054918b40c0e",
+			"name": "Task 5: LOGIN (Set bearer token after login) ***",
+			"url": "http://localhost:8080/api/v1/auth/login",
+			"time": 77,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content-Type is application/json": true,
+				"Success key exists and is true": true,
+				"Data object should have 'token', 'expiresIn', and 'user' keys": true,
+				"User object properties are non-empty strings": false
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Success key exists and is true": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Data object should have 'token', 'expiresIn', and 'user' keys": {
+					"pass": 1,
+					"fail": 0
+				},
+				"User object properties are non-empty strings": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				77
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content-Type is application/json": true,
+					"Success key exists and is true": true,
+					"Data object should have 'token', 'expiresIn', and 'user' keys": true,
+					"User object properties are non-empty strings": false
+				}
+			]
+		},
+		{
+			"id": "728ada54-2f5b-4ec5-8740-f6fc8b1ca941",
+			"name": "Task 5.1: X-Client-ID Access Control (Missing header)",
+			"url": "http://localhost:8080/api/v1/issues/1",
+			"time": 2,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				2
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "59426653-cab3-4e65-b525-6f1522d31666",
+			"name": "Task 5.2: X-Client-ID Access (Forbidden)",
+			"url": "http://localhost:8080/api/v1/issues/1",
+			"time": 1,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				1
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "8deb73a5-cc2c-4158-99c2-f6ecab82a28c",
+			"name": "Task 5.3: Authorization (Unauthorized)",
+			"url": "http://localhost:8080/api/v1/issues/1",
+			"time": 1,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				1
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "73179a66-0d33-45cd-85e3-2b8ee2ad0af2",
+			"name": "Task 5.4: Authorization (Invalid Token)",
+			"url": "http://localhost:8080/api/v1/issues/1",
+			"time": 1,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				1
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "2d5f30e2-206b-48a4-b0b6-b811612a15f2",
+			"name": "Task 5.5: Authorization (Expired Token)",
+			"url": "http://localhost:8080/api/v1/issues/1",
+			"time": 2,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				2
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "8b63599f-6027-4e1c-be3d-e0a0abd3d564",
+			"name": "Task 6: Compare Revisions (Issue ID: 36)",
+			"url": "http://localhost:8080/api/v1/issues/36/revisions/compare?from=1&to=10&order=desc",
+			"time": 4,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content type is application/json": true,
+				"Data object and its sub-objects are valid": false,
+				"Revisions array is present and has expected number of elements": true,
+				"Validate presence and validity of revision fields": false
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content type is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Data object and its sub-objects are valid": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Revisions array is present and has expected number of elements": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Validate presence and validity of revision fields": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content type is application/json": true,
+					"Data object and its sub-objects are valid": false,
+					"Revisions array is present and has expected number of elements": true,
+					"Validate presence and validity of revision fields": false
+				}
+			]
+		},
+		{
+			"id": "67b5e5f2-121d-4f6c-83cd-d3ecd1214c58",
+			"name": "Get/Search/Filter/Sort Issues with Pagination (Task 2)",
+			"url": "http://localhost:8080/api/v1/issues?page=1&pageSize=15&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=priority&sortOrder=desc&search=",
+			"time": 4,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content-Type header is application/json": true,
+				"Validate the success field is true": true,
+				"Data object contains 'issues' array and 'pagination' object": true,
+				"All issue objects have the required properties": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Validate the success field is true": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Data object contains 'issues' array and 'pagination' object": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All issue objects have the required properties": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content-Type header is application/json": true,
+					"Validate the success field is true": true,
+					"Data object contains 'issues' array and 'pagination' object": true,
+					"All issue objects have the required properties": true
+				}
+			]
+		},
+		{
+			"id": "1bccbf4a-560c-462b-b12f-30695ea7ae39",
+			"name": "Get Issue by ID (Task 2)",
+			"url": "http://localhost:8080/api/v1/issues/1",
+			"time": 3,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content-Type header is application/json": true,
+				"Response has the required fields": false,
+				"Assignee email is in a valid email format": true,
+				"Created by email is in a valid email format": true,
+				"Updated by email is in a valid email format": true,
+				"Message is an empty string": false
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Assignee email is in a valid email format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Created by email is in a valid email format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Updated by email is in a valid email format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Message is an empty string": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content-Type header is application/json": true,
+					"Response has the required fields": false,
+					"Assignee email is in a valid email format": true,
+					"Created by email is in a valid email format": true,
+					"Updated by email is in a valid email format": true,
+					"Message is an empty string": false
+				}
+			]
+		},
+		{
+			"id": "70322032-cc8b-4d95-a175-f070660746f5",
+			"name": "List Issue Revisions (Task 4)",
+			"url": "http://localhost:8080/api/v1/issues/1/revisions",
+			"time": 3,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content-Type header is application/json": true,
+				"Success field should be true": true,
+				"Data array is present and contains at least one element": true,
+				"Issue object has non-empty title, status, priority, and description fields": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Success field should be true": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Data array is present and contains at least one element": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Issue object has non-empty title, status, priority, and description fields": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content-Type header is application/json": true,
+					"Success field should be true": true,
+					"Data array is present and contains at least one element": true,
+					"Issue object has non-empty title, status, priority, and description fields": true
+				}
+			]
+		},
+		{
+			"id": "8fcd373f-f9f5-4721-9b66-163351b96529",
+			"name": "Compare Issue Revisions (Task 6)",
+			"url": "http://localhost:8080/api/v1/issues/1/revisions/compare?from=1&to=10&order=asc",
+			"time": 4,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content type is application/json": true,
+				"Success field is true": true,
+				"Data object contains before, after, changes, and revisions keys": true,
+				"Revisions array contains at least one element": false
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content type is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Success field is true": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Data object contains before, after, changes, and revisions keys": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Revisions array contains at least one element": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content type is application/json": true,
+					"Success field is true": true,
+					"Data object contains before, after, changes, and revisions keys": true,
+					"Revisions array contains at least one element": false
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 145,
+	"collection": {
+		"requests": [
+			{
+				"id": "730f5e44-771a-4f63-9261-21193de46d67",
+				"method": "GET"
+			},
+			{
+				"id": "cb0dbd69-1074-4925-8935-0a8a0dbf3e4f",
+				"method": "GET"
+			},
+			{
+				"id": "0acc4b45-02b7-4584-9096-b30037238bb0",
+				"method": "POST"
+			},
+			{
+				"id": "fc6a9bc7-9606-471c-993a-3860fe54fe7c",
+				"method": "GET"
+			},
+			{
+				"id": "f043aaf1-f838-4b84-8cd6-d9211e70c769",
+				"method": "GET"
+			},
+			{
+				"id": "ab0acc33-145c-47de-81ce-2b18467c5b56",
+				"method": "PUT"
+			},
+			{
+				"id": "e4ddc3e8-8ae3-41a2-a8dd-1aaed733299f",
+				"method": "GET"
+			},
+			{
+				"id": "df1e8abd-6b5a-44d5-9890-054918b40c0e",
+				"method": "POST"
+			},
+			{
+				"id": "728ada54-2f5b-4ec5-8740-f6fc8b1ca941",
+				"method": "GET"
+			},
+			{
+				"id": "59426653-cab3-4e65-b525-6f1522d31666",
+				"method": "GET"
+			},
+			{
+				"id": "8deb73a5-cc2c-4158-99c2-f6ecab82a28c",
+				"method": "GET"
+			},
+			{
+				"id": "73179a66-0d33-45cd-85e3-2b8ee2ad0af2",
+				"method": "GET"
+			},
+			{
+				"id": "2d5f30e2-206b-48a4-b0b6-b811612a15f2",
+				"method": "GET"
+			},
+			{
+				"id": "8b63599f-6027-4e1c-be3d-e0a0abd3d564",
+				"method": "GET"
+			},
+			{
+				"id": "67b5e5f2-121d-4f6c-83cd-d3ecd1214c58",
+				"method": "GET"
+			},
+			{
+				"id": "1bccbf4a-560c-462b-b12f-30695ea7ae39",
+				"method": "GET"
+			},
+			{
+				"id": "70322032-cc8b-4d95-a175-f070660746f5",
+				"method": "GET"
+			},
+			{
+				"id": "8fcd373f-f9f5-4721-9b66-163351b96529",
+				"method": "GET"
+			}
+		]
+	}
+}

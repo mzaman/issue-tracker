@@ -1,5 +1,3 @@
-const swaggerUiKoa = require('swagger-ui-koa');
-
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'dev'}` });
 
 module.exports = {

@@ -8,6 +8,51 @@
 	"item": [
 		{
 			"name": "Discovery",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData).to.have.property('success');",
+							"    pm.expect(responseData).to.have.property('message');",
+							"    pm.expect(responseData).to.have.property('data');",
+							"    pm.expect(responseData).to.have.property('errors');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Discovery field is present in the response data\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.data).to.exist;",
+							"    pm.expect(responseData.data.discovery).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Success field is a boolean value\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData.success).to.be.a('boolean');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [
@@ -29,7 +74,59 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Discovery",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "my-client-id-123",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								""
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "105"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:08:31 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Request succeeded\",\n    \"data\": {\n        \"discovery\": \"http://localhost:8080\"\n    },\n    \"errors\": null\n}"
+				}
+			]
 		},
 		{
 			"name": "Health Check",
@@ -38,10 +135,42 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							""
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Success field should exist and be a boolean\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.success).to.exist.and.to.be.a('boolean');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Data object contains message and version fields\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.data).to.be.an('object');",
+							"  pm.expect(responseData.data).to.have.property('message');",
+							"  pm.expect(responseData.data).to.have.property('version');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Errors should be null or empty\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.errors).to.be.nullOrEmpty;",
+							"});"
 						],
-						"type": "text/javascript",
-						"packages": {}
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -66,10 +195,113 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Health Check",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/health",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"health"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "102"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:08:55 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Request succeeded\",\n    \"data\": {\n        \"message\": \"OK\",\n        \"version\": \"1.0.0\"\n    },\n    \"errors\": null\n}"
+				}
+			]
 		},
 		{
 			"name": "Task 1: Create New Issue (Please login first) *",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 201\", function () {",
+							"  pm.expect(pm.response.code).to.equal(201);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Success field should be true\", function () {",
+							"  const responseData = pm.response.json();",
+							"",
+							"  pm.expect(responseData.success).to.be.true;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Data object has the required fields\", function () {",
+							"    const responseData = pm.response.json().data;",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData).to.have.property('id');",
+							"    pm.expect(responseData).to.have.property('title');",
+							"    pm.expect(responseData).to.have.property('description');",
+							"    pm.expect(responseData).to.have.property('status');",
+							"    pm.expect(responseData).to.have.property('priority');",
+							"    pm.expect(responseData).to.have.property('createdBy');",
+							"    pm.expect(responseData).to.have.property('updatedBy');",
+							"    pm.expect(responseData).to.have.property('created_at');",
+							"    pm.expect(responseData).to.have.property('updated_at');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Errors field should be null\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.errors).to.be.null;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Created_at and updated_at fields are in valid date format\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData.created_at).to.match(/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/);",
+							"    pm.expect(responseData.updated_at).to.match(/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [
@@ -100,10 +332,124 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Task 1: Create New Issue (Please login first) *",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Bug in issue-service\",\n    \"description\": \"Ah snap :(\",\n    \"status\": \"open\",\n    \"priority\": \"medium\",\n    \"assignee\": null\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "307"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:09:44 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Resource created successfully\",\n    \"data\": {\n        \"id\": 36,\n        \"title\": \"Bug in issue-service\",\n        \"description\": \"Ah snap :(\",\n        \"status\": \"open\",\n        \"priority\": \"medium\",\n        \"assignee\": null,\n        \"createdBy\": 1,\n        \"updatedBy\": 1,\n        \"created_at\": \"2025-05-26T07:09:44.000Z\",\n        \"updated_at\": \"2025-05-26T07:09:44.000Z\"\n    },\n    \"errors\": null\n}"
+				}
+			]
 		},
 		{
 			"name": "Task 2: Get Issues",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content type is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Success field should exist and be true\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.have.property('success', true);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Data object contains 'issues' and 'pagination' properties\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.data).to.have.property('issues');",
+							"    pm.expect(responseData.data).to.have.property('pagination');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Issues array is not empty and contains required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.data.issues).to.be.an('array').that.is.not.empty;",
+							"",
+							"    responseData.data.issues.forEach(function(issue) {",
+							"        pm.expect(issue).to.have.property('id');",
+							"        pm.expect(issue).to.have.property('title');",
+							"        pm.expect(issue).to.have.property('description');",
+							"        pm.expect(issue).to.have.property('status');",
+							"        pm.expect(issue).to.have.property('priority');",
+							"        pm.expect(issue).to.have.property('createdBy');",
+							"        pm.expect(issue).to.have.property('updatedBy');",
+							"        pm.expect(issue).to.have.property('created_at');",
+							"        pm.expect(issue).to.have.property('updated_at');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [
@@ -156,10 +502,154 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Task 2: Get Issues",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues?page=1&pageSize=5&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=id&sortOrder=desc&search=",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "5"
+								},
+								{
+									"key": "status",
+									"value": "open,in_progress,resolved"
+								},
+								{
+									"key": "priority",
+									"value": "medium,high,critical"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								},
+								{
+									"key": "search",
+									"value": ""
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "2196"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:10:03 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Request succeeded\",\n    \"data\": {\n        \"issues\": [\n            {\n                \"id\": 36,\n                \"title\": \"Bug in issue-service\",\n                \"description\": \"Ah snap :(\",\n                \"status\": \"open\",\n                \"priority\": \"medium\",\n                \"assignee\": null,\n                \"createdBy\": 1,\n                \"updatedBy\": 1,\n                \"created_at\": \"2025-05-26T07:09:44.000Z\",\n                \"updated_at\": \"2025-05-26T07:09:44.000Z\"\n            },\n            {\n                \"id\": 22,\n                \"title\": \"Incorrect user role permissions - escalated\",\n                \"description\": \"Some users have permissions they should not have. Assignee updated. Patch development underway. Initial investigation pending. Root cause analysis in progress. Under review by support team. Debugging intermittent failure. Temporary workaround implemented. Blocked by dependency update.\",\n                \"status\": \"open\",\n                \"priority\": \"critical\",\n                \"assignee\": 90,\n                \"createdBy\": 65,\n                \"updatedBy\": 44,\n                \"created_at\": \"2025-05-26T00:32:47.000Z\",\n                \"updated_at\": \"2025-06-12T05:38:26.000Z\"\n            },\n            {\n                \"id\": 24,\n                \"title\": \"Broken social media share buttons - ready for close\",\n                \"description\": \"Facebook and Twitter share buttons do not work. Assignee updated. Applying workaround. Temporary workaround implemented.\",\n                \"status\": \"resolved\",\n                \"priority\": \"medium\",\n                \"assignee\": 68,\n                \"createdBy\": 51,\n                \"updatedBy\": 60,\n                \"created_at\": \"2025-05-25T22:53:55.000Z\",\n                \"updated_at\": \"2025-05-30T04:17:56.000Z\"\n            },\n            {\n                \"id\": 32,\n                \"title\": \"Incorrect order status displayed in user profile - resolved\",\n                \"description\": \"Order statuses do not update correctly after shipment. Assignee updated. Attempting partial fixes. Temporary workaround implemented. Waiting for more info from reporter. Attempting partial fixes.\",\n                \"status\": \"in_progress\",\n                \"priority\": \"medium\",\n                \"assignee\": 22,\n                \"createdBy\": 73,\n                \"updatedBy\": 4,\n                \"created_at\": \"2025-05-03T21:38:07.000Z\",\n                \"updated_at\": \"2025-05-22T09:34:42.000Z\"\n            },\n            {\n                \"id\": 7,\n                \"title\": \"Reports export CSV corrupted - pending\",\n                \"description\": \"Exported CSV files contain corrupted data when large datasets. Assignee updated. Working on a hotfix. Initial investigation pending. Bug fixed and verified. Testing in local environment. Under review by support team.\",\n                \"status\": \"open\",\n                \"priority\": \"critical\",\n                \"assignee\": 10,\n                \"createdBy\": 100,\n                \"updatedBy\": 28,\n                \"created_at\": \"2025-04-24T11:55:59.000Z\",\n                \"updated_at\": \"2025-05-21T11:32:32.000Z\"\n            }\n        ],\n        \"pagination\": {\n            \"totalItems\": 32,\n            \"totalPages\": 7,\n            \"currentPage\": 1,\n            \"pageSize\": 5\n        }\n    },\n    \"errors\": null\n}"
+				}
+			]
 		},
 		{
 			"name": "Task 2.1: Get Issue by ID (36)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate the data object properties\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.data).to.be.an('object');",
+							"  pm.expect(responseData.data.title).to.exist;",
+							"  pm.expect(responseData.data.description).to.exist;",
+							"  pm.expect(responseData.data.status).to.exist;",
+							"  pm.expect(responseData.data.priority).to.exist;",
+							"  pm.expect(responseData.data.assignee).to.exist;",
+							"  pm.expect(responseData.data.createdBy).to.exist;",
+							"  pm.expect(responseData.data.updatedBy).to.exist;",
+							"  pm.expect(responseData.data.updatedAt).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Assignee email is in a valid format\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.data.assignee.email).to.be.a('string').and.to.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/);",
+							"});",
+							"",
+							"pm.test(\"Created by email is in a valid format\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.data.createdBy.email).to.be.a('string').and.to.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/);",
+							"});",
+							"",
+							"pm.test(\"Updated by email is in a valid format\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.data.updatedBy.email).to.be.a('string').and.to.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Verify that errors is null or an empty array\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.have.property(\"errors\").that.satisfy(function (errors) {",
+							"    return errors === null || (Array.isArray(errors) && errors.length === 0);",
+							"  }, \"Errors should be null or an empty array\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [
@@ -183,10 +673,113 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Task 2.1: Get Issue by ID (36)",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/36",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues",
+								"36"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "332"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:10:19 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Request succeeded\",\n    \"data\": {\n        \"title\": \"Bug in issue-service\",\n        \"description\": \"Ah snap :(\",\n        \"status\": \"open\",\n        \"priority\": \"medium\",\n        \"assignee\": null,\n        \"createdBy\": {\n            \"email\": \"admin@example.com\",\n            \"name\": \"Admin\"\n        },\n        \"updatedBy\": {\n            \"email\": \"admin@example.com\",\n            \"name\": \"Admin\"\n        },\n        \"updatedAt\": \"2025-05-26T07:09:44.000Z\"\n    },\n    \"errors\": null\n}"
+				}
+			]
 		},
 		{
 			"name": "Task 3: Update Issue with ID (36)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content type is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate the data object for required fields\", function () {",
+							"    const responseData = pm.response.json().data;",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData).to.have.property('id');",
+							"    pm.expect(responseData).to.have.property('title');",
+							"    pm.expect(responseData).to.have.property('description');",
+							"    pm.expect(responseData).to.have.property('status');",
+							"    pm.expect(responseData).to.have.property('priority');",
+							"    pm.expect(responseData).to.have.property('assignee');",
+							"    pm.expect(responseData).to.have.property('createdBy');",
+							"    pm.expect(responseData).to.have.property('updatedBy');",
+							"    pm.expect(responseData).to.have.property('created_at');",
+							"    pm.expect(responseData).to.have.property('updated_at');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Success field is a boolean\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.have.property('success').that.is.a('boolean');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Message field should be a non-empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -218,10 +811,188 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Task 3.1: Update Issue with ID (36)",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Bug in issue-service\",\n    \"description\": \"It does not generate revisions\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\",\n    \"assignee\": 3\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/36",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues",
+								"36"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "317"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:10:36 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Request succeeded\",\n    \"data\": {\n        \"id\": 36,\n        \"title\": \"Bug in issue-service\",\n        \"description\": \"It does not generate revisions\",\n        \"status\": \"in_progress\",\n        \"priority\": \"high\",\n        \"assignee\": 3,\n        \"createdBy\": 1,\n        \"updatedBy\": 1,\n        \"created_at\": \"2025-05-26T07:09:44.000Z\",\n        \"updated_at\": \"2025-05-26T07:10:36.230Z\"\n    },\n    \"errors\": null\n}"
+				},
+				{
+					"name": "Task 3.2: Update Issue with ID (36)",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Bug in issue-service\",\n    \"description\": \"Fixed and tested on staging server, now it generates revisions properly\",\n    \"status\": \"resolved\",\n    \"priority\": \"high\",\n    \"assignee\": 3\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/36",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues",
+								"36"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "355"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:12:29 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Request succeeded\",\n    \"data\": {\n        \"id\": 36,\n        \"title\": \"Bug in issue-service\",\n        \"description\": \"Fixed and tested on staging server, now it generates revisions properly\",\n        \"status\": \"resolved\",\n        \"priority\": \"high\",\n        \"assignee\": 3,\n        \"createdBy\": 1,\n        \"updatedBy\": 1,\n        \"created_at\": \"2025-05-26T07:09:44.000Z\",\n        \"updated_at\": \"2025-05-26T07:12:29.656Z\"\n    },\n    \"errors\": null\n}"
+				}
+			]
 		},
 		{
 			"name": "Task 4: List Revisions (Issue ID: 36)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate 'success' field is true\", function () {",
+							"  const responseData = pm.response.json();",
+							"  pm.expect(responseData.success).to.be.true;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Data array is present and contains expected number of elements\", function () {",
+							"  const responseData = pm.response.json();",
+							"",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData.data).to.exist;",
+							"  pm.expect(responseData.data).to.be.an('array');",
+							"  pm.expect(responseData.data).to.have.lengthOf(1);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate revisionNumber is a non-negative integer\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.data).to.be.an('array');",
+							"    responseData.data.forEach(function (item) {",
+							"        pm.expect(item.revisionNumber).to.be.a('number').and.to.be.at.least(0, \"Revision number should be a non-negative integer\");",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"Validate issue object contains non-empty strings for title, status, and priority\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.data).to.be.an('array');",
+							"    responseData.data.forEach(function (item) {",
+							"        pm.expect(item.issue.title).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Title should not be empty\");",
+							"        pm.expect(item.issue.status).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Status should not be empty\");",
+							"        pm.expect(item.issue.priority).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Priority should not be empty\");",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [
@@ -246,10 +1017,110 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Task 4: List Revisions (Issue ID: 36)",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/36/revisions",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues",
+								"36",
+								"revisions"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "1388"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:14:30 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Request succeeded\",\n    \"data\": [\n        {\n            \"revisionNumber\": 1,\n            \"issue\": {\n                \"title\": \"Bug in issue-service\",\n                \"status\": \"open\",\n                \"assignee\": null,\n                \"priority\": \"medium\",\n                \"createdBy\": 1,\n                \"updatedBy\": 1,\n                \"description\": \"Ah snap :(\"\n            },\n            \"changes\": \"{}\",\n            \"updatedBy\": 1,\n            \"updatedAt\": \"2025-05-26T07:09:44.000Z\"\n        },\n        {\n            \"revisionNumber\": 2,\n            \"issue\": {\n                \"title\": \"Bug in issue-service\",\n                \"status\": \"in_progress\",\n                \"assignee\": 3,\n                \"priority\": \"high\",\n                \"createdBy\": 1,\n                \"updatedBy\": 1,\n                \"description\": \"It does not generate revisions\"\n            },\n            \"changes\": {\n                \"status\": \"in_progress\",\n                \"assignee\": 3,\n                \"priority\": \"high\",\n                \"description\": \"It does not generate revisions\"\n            },\n            \"updatedBy\": 1,\n            \"updatedAt\": \"2025-05-26T07:10:36.000Z\"\n        },\n        {\n            \"revisionNumber\": 3,\n            \"issue\": {\n                \"title\": \"Bug in issue-service\",\n                \"status\": \"resolved\",\n                \"assignee\": 3,\n                \"priority\": \"high\",\n                \"createdBy\": 1,\n                \"updatedBy\": 1,\n                \"description\": \"Fixed and tested on staging server, now it generates revisions properly\"\n            },\n            \"changes\": {\n                \"status\": \"resolved\",\n                \"description\": \"Fixed and tested on staging server, now it generates revisions properly\"\n            },\n            \"updatedBy\": 1,\n            \"updatedAt\": \"2025-05-26T07:12:29.000Z\"\n        },\n        {\n            \"revisionNumber\": 4,\n            \"issue\": {\n                \"title\": \"Bug in issue-service\",\n                \"status\": \"closed\",\n                \"assignee\": 1,\n                \"priority\": \"high\",\n                \"createdBy\": 1,\n                \"updatedBy\": 1,\n                \"description\": \"Fixed and tested on staging server, now it generates revisions properly\"\n            },\n            \"changes\": {\n                \"status\": \"closed\",\n                \"assignee\": 1\n            },\n            \"updatedBy\": 1,\n            \"updatedAt\": \"2025-05-26T07:13:03.000Z\"\n        }\n    ],\n    \"errors\": null\n}"
+				}
+			]
 		},
 		{
 			"name": "Task 5: LOGIN (Set bearer token after login) ***",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type is application/json\", function () {",
+							"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Success key exists and is true\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.have.property('success', true);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Data object should have 'token', 'expiresIn', and 'user' keys\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.data).to.be.an('object');",
+							"    pm.expect(responseData.data).to.have.property('token');",
+							"    pm.expect(responseData.data).to.have.property('expiresIn');",
+							"    pm.expect(responseData.data).to.have.property('user');",
+							"});",
+							"",
+							"",
+							"pm.test(\"User object properties are non-empty strings\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.user).to.be.an('object');",
+							"    pm.expect(responseData.user.id).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"    pm.expect(responseData.user.name).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"    pm.expect(responseData.user.email).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -290,7 +1161,75 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Task 5: Login (Set bearer token after login) *",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"email\":\"admin@example.com\",\"password\":\"Password123\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/auth/login",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "331"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 06:28:18 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Request succeeded\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODI0MDg5OCwiZXhwIjoxNzQ4MjUxNjk4fQ.J8rB0v-Eo5fMT5hUaVpmXYhZXGMzxt_GoKrww6CG7Pw\",\n        \"expiresIn\": \"3h\",\n        \"user\": {\n            \"id\": 1,\n            \"name\": \"Admin\",\n            \"email\": \"admin@example.com\"\n        }\n    },\n    \"errors\": null\n}"
+				}
+			]
 		},
 		{
 			"name": "Task 5.1: X-Client-ID Access Control (Missing header)",
@@ -304,17 +1243,76 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/issues/1",
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+					"protocol": "{{protocol}}",
 					"host": [
-						"{{base_url}}"
+						"{{hostname}}"
 					],
+					"port": "{{port}}",
 					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
 						"issues",
 						"1"
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "5.1: Missing Client ID",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues",
+								"1"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "261"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:15:35 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"type\": \"about:blank\",\n    \"title\": \"Missing X-Client-ID header\",\n    \"status\": 400,\n    \"detail\": \"Missing X-Client-ID header\",\n    \"instance\": \"/api/v1/issues/1\",\n    \"errors\": [\n        {\n            \"field\": \"x-client-id\",\n            \"message\": \"X-Client-ID header is required\",\n            \"code\": \"missing_client_id\"\n        }\n    ],\n    \"success\": false\n}"
+				}
+			]
 		},
 		{
 			"name": "Task 5.2: X-Client-ID Access (Forbidden)",
@@ -341,7 +1339,61 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "5.2: Invalid X-Client-ID",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "Invalid_X-Client-ID_Test"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues",
+								"1"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "156"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:17:32 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"type\": \"about:blank\",\n    \"title\": \"Invalid X-Client-ID\",\n    \"status\": 403,\n    \"detail\": \"Invalid X-Client-ID\",\n    \"instance\": \"/api/v1/issues/1\",\n    \"errors\": null,\n    \"success\": false\n}"
+				}
+			]
 		},
 		{
 			"name": "Task 5.3: Authorization (Unauthorized)",
@@ -371,7 +1423,61 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Task 5.3: Authorization (Unauthorized)",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues",
+								"1"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "158"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:18:40 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"type\": \"about:blank\",\n    \"title\": \"Authentication Error\",\n    \"status\": 401,\n    \"detail\": \"Authentication Error\",\n    \"instance\": \"/api/v1/issues/1\",\n    \"errors\": null,\n    \"success\": false\n}"
+				}
+			]
 		},
 		{
 			"name": "Task 5.4: Authorization (Invalid Token)",
@@ -408,7 +1514,61 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Task 5.4: Authorization (Invalid Token)",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues",
+								"1"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "194"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:19:55 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"type\": \"invalid-token\",\n    \"title\": \"Invalid token. Authentication failed.\",\n    \"status\": 401,\n    \"detail\": \"Invalid token. Authentication failed.\",\n    \"instance\": \"/api/v1/issues/1\",\n    \"errors\": null,\n    \"success\": false\n}"
+				}
+			]
 		},
 		{
 			"name": "Task 5.5: Authorization (Expired Token)",
@@ -445,10 +1605,125 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Task 5.5: Authorization (Expired Token)",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues",
+								"1"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "188"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:20:14 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"type\": \"token-expired\",\n    \"title\": \"Token expired. Please login again.\",\n    \"status\": 401,\n    \"detail\": \"Token expired. Please login again.\",\n    \"instance\": \"/api/v1/issues/1\",\n    \"errors\": null,\n    \"success\": false\n}"
+				}
+			]
 		},
 		{
 			"name": "Task 6: Compare Revisions (Issue ID: 36)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content type is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Data object and its sub-objects are valid\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.data).to.exist.and.to.be.an('object');",
+							"    ",
+							"    pm.expect(responseData.data.before).to.exist.and.to.be.an('object');",
+							"    pm.expect(responseData.data.after).to.exist.and.to.be.an('object');",
+							"    pm.expect(responseData.data.changes).to.exist.and.to.be.an('object');",
+							"    ",
+							"    pm.expect(responseData.data.revisions).to.exist.and.to.be.an('array');",
+							"    responseData.data.revisions.forEach(function(revision) {",
+							"        pm.expect(revision).to.be.an('object');",
+							"        pm.expect(revision.issue).to.exist.and.to.be.an('object');",
+							"        pm.expect(revision.changes).to.exist.and.to.be.an('object');",
+							"    });",
+							"});",
+							"",
+							"",
+							"pm.test(\"Revisions array is present and has expected number of elements\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.data.revisions).to.be.an('array');",
+							"    pm.expect(responseData.data.revisions).to.have.lengthOf.at.least(1);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate presence and validity of revision fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.data.revisions).to.be.an('array');",
+							"    ",
+							"    responseData.data.revisions.forEach(function(revision) {",
+							"        pm.expect(revision).to.have.property('revisionNumber').that.is.a('number');",
+							"        pm.expect(revision).to.have.property('issue').that.is.an('object');",
+							"        pm.expect(revision).to.have.property('changes').that.is.an('object');",
+							"        pm.expect(revision).to.have.property('updatedBy').that.is.a('number');",
+							"        pm.expect(revision).to.have.property('updatedAt').that.is.a('string');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [
@@ -488,10 +1763,125 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Task 6: Compare Revisions (Issue ID: 36)",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/36/revisions/compare?from=1&to=10&order=desc",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues",
+								"36",
+								"revisions",
+								"compare"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "1"
+								},
+								{
+									"key": "to",
+									"value": "10"
+								},
+								{
+									"key": "order",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "1906"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:20:24 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Request succeeded\",\n    \"data\": {\n        \"before\": {\n            \"title\": \"Bug in issue-service\",\n            \"status\": \"open\",\n            \"assignee\": null,\n            \"priority\": \"medium\",\n            \"createdBy\": 1,\n            \"updatedBy\": 1,\n            \"description\": \"Ah snap :(\"\n        },\n        \"after\": {\n            \"title\": \"Bug in issue-service\",\n            \"status\": \"closed\",\n            \"assignee\": 1,\n            \"priority\": \"high\",\n            \"createdBy\": 1,\n            \"updatedBy\": 1,\n            \"description\": \"Fixed and tested on staging server, now it generates revisions properly\"\n        },\n        \"changes\": {\n            \"status\": \"closed\",\n            \"assignee\": 1,\n            \"priority\": \"high\",\n            \"description\": \"Fixed and tested on staging server, now it generates revisions properly\"\n        },\n        \"revisions\": [\n            {\n                \"revisionNumber\": 4,\n                \"issue\": {\n                    \"title\": \"Bug in issue-service\",\n                    \"status\": \"closed\",\n                    \"assignee\": 1,\n                    \"priority\": \"high\",\n                    \"createdBy\": 1,\n                    \"updatedBy\": 1,\n                    \"description\": \"Fixed and tested on staging server, now it generates revisions properly\"\n                },\n                \"changes\": {\n                    \"status\": \"closed\",\n                    \"assignee\": 1\n                },\n                \"updatedBy\": 1,\n                \"updatedAt\": \"2025-05-26T07:13:03.000Z\"\n            },\n            {\n                \"revisionNumber\": 3,\n                \"issue\": {\n                    \"title\": \"Bug in issue-service\",\n                    \"status\": \"resolved\",\n                    \"assignee\": 3,\n                    \"priority\": \"high\",\n                    \"createdBy\": 1,\n                    \"updatedBy\": 1,\n                    \"description\": \"Fixed and tested on staging server, now it generates revisions properly\"\n                },\n                \"changes\": {\n                    \"status\": \"resolved\",\n                    \"description\": \"Fixed and tested on staging server, now it generates revisions properly\"\n                },\n                \"updatedBy\": 1,\n                \"updatedAt\": \"2025-05-26T07:12:29.000Z\"\n            },\n            {\n                \"revisionNumber\": 2,\n                \"issue\": {\n                    \"title\": \"Bug in issue-service\",\n                    \"status\": \"in_progress\",\n                    \"assignee\": 3,\n                    \"priority\": \"high\",\n                    \"createdBy\": 1,\n                    \"updatedBy\": 1,\n                    \"description\": \"It does not generate revisions\"\n                },\n                \"changes\": {\n                    \"status\": \"in_progress\",\n                    \"assignee\": 3,\n                    \"priority\": \"high\",\n                    \"description\": \"It does not generate revisions\"\n                },\n                \"updatedBy\": 1,\n                \"updatedAt\": \"2025-05-26T07:10:36.000Z\"\n            },\n            {\n                \"revisionNumber\": 1,\n                \"issue\": {\n                    \"title\": \"Bug in issue-service\",\n                    \"status\": \"open\",\n                    \"assignee\": null,\n                    \"priority\": \"medium\",\n                    \"createdBy\": 1,\n                    \"updatedBy\": 1,\n                    \"description\": \"Ah snap :(\"\n                },\n                \"changes\": \"{}\",\n                \"updatedBy\": 1,\n                \"updatedAt\": \"2025-05-26T07:09:44.000Z\"\n            }\n        ]\n    },\n    \"errors\": null\n}"
+				}
+			]
 		},
 		{
 			"name": "Get/Search/Filter/Sort Issues with Pagination (Task 2)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate the success field is true\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.success).to.be.true;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Data object contains 'issues' array and 'pagination' object\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData.data).to.be.an('object');",
+							"    pm.expect(responseData.data.issues).to.be.an('array');",
+							"    pm.expect(responseData.data.pagination).to.be.an('object');",
+							"});",
+							"",
+							"",
+							"pm.test(\"All issue objects have the required properties\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.data.issues).to.be.an('array').and.to.have.lengthOf.at.least(1);",
+							"",
+							"  responseData.data.issues.forEach(function(issue) {",
+							"    pm.expect(issue).to.include.all.keys('id', 'title', 'description', 'status', 'priority', 'createdBy', 'updatedBy', 'created_at', 'updated_at');",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [
@@ -544,10 +1934,152 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Get All Issues",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues?page=1&pageSize=15&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=priority&sortOrder=desc&search=",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "15"
+								},
+								{
+									"key": "status",
+									"value": "open,in_progress,resolved"
+								},
+								{
+									"key": "priority",
+									"value": "medium,high,critical"
+								},
+								{
+									"key": "sortBy",
+									"value": "priority"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								},
+								{
+									"key": "search",
+									"value": ""
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "6391"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:20:47 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Request succeeded\",\n    \"data\": {\n        \"issues\": [\n            {\n                \"id\": 24,\n                \"title\": \"Broken social media share buttons - ready for close\",\n                \"description\": \"Facebook and Twitter share buttons do not work. Assignee updated. Applying workaround. Temporary workaround implemented.\",\n                \"status\": \"resolved\",\n                \"priority\": \"medium\",\n                \"assignee\": 68,\n                \"createdBy\": 51,\n                \"updatedBy\": 60,\n                \"created_at\": \"2025-05-25T22:53:55.000Z\",\n                \"updated_at\": \"2025-05-30T04:17:56.000Z\"\n            },\n            {\n                \"id\": 21,\n                \"title\": \"Checkout discount code not applying - investigating\",\n                \"description\": \"Discount codes entered during checkout are ignored. Assignee updated. Attempting partial fixes. Needs triage and assignment. Patch development underway.\",\n                \"status\": \"in_progress\",\n                \"priority\": \"medium\",\n                \"assignee\": 100,\n                \"createdBy\": 91,\n                \"updatedBy\": 15,\n                \"created_at\": \"2024-11-29T08:40:18.000Z\",\n                \"updated_at\": \"2025-01-27T19:49:00.000Z\"\n            },\n            {\n                \"id\": 4,\n                \"title\": \"User profile picture upload fails\",\n                \"description\": \"Uploading profile pictures sometimes fails with 500 error. Assignee updated. Working on a hotfix. Blocked by dependency update.\",\n                \"status\": \"open\",\n                \"priority\": \"medium\",\n                \"assignee\": 35,\n                \"createdBy\": 45,\n                \"updatedBy\": 9,\n                \"created_at\": \"2024-08-05T03:15:32.000Z\",\n                \"updated_at\": \"2024-09-29T22:34:35.000Z\"\n            },\n            {\n                \"id\": 30,\n                \"title\": \"Multiple failed login attempts lock account - needs review\",\n                \"description\": \"Accounts are locked after 3 failed login attempts with no unlock option. Assignee updated. Patch development underway. Resolved with rollback. Needs triage and assignment.\",\n                \"status\": \"open\",\n                \"priority\": \"medium\",\n                \"assignee\": 77,\n                \"createdBy\": 83,\n                \"updatedBy\": 53,\n                \"created_at\": \"2025-03-30T19:00:47.000Z\",\n                \"updated_at\": \"2025-05-03T06:36:15.000Z\"\n            },\n            {\n                \"id\": 33,\n                \"title\": \"Account deletion request not processed - ready for close\",\n                \"description\": \"Users requesting account deletion still have active accounts. Assignee updated. Currently investigating root cause. Waiting for more info from reporter. Root cause identified and addressed.\",\n                \"status\": \"resolved\",\n                \"priority\": \"medium\",\n                \"assignee\": 53,\n                \"createdBy\": 70,\n                \"updatedBy\": 19,\n                \"created_at\": \"2024-10-19T19:25:36.000Z\",\n                \"updated_at\": \"2025-06-06T20:23:48.000Z\"\n            },\n            {\n                \"id\": 32,\n                \"title\": \"Incorrect order status displayed in user profile - resolved\",\n                \"description\": \"Order statuses do not update correctly after shipment. Assignee updated. Attempting partial fixes. Temporary workaround implemented. Waiting for more info from reporter. Attempting partial fixes.\",\n                \"status\": \"in_progress\",\n                \"priority\": \"medium\",\n                \"assignee\": 22,\n                \"createdBy\": 73,\n                \"updatedBy\": 4,\n                \"created_at\": \"2025-05-03T21:38:07.000Z\",\n                \"updated_at\": \"2025-05-22T09:34:42.000Z\"\n            },\n            {\n                \"id\": 31,\n                \"title\": \"Newsletter subscription checkbox not working - ready for close\",\n                \"description\": \"Users cannot subscribe/unsubscribe to newsletters using the checkbox. Assignee updated. Preparing fix for review. Resolved after patch deployment. Waiting on environment setup.\",\n                \"status\": \"open\",\n                \"priority\": \"medium\",\n                \"assignee\": 41,\n                \"createdBy\": 53,\n                \"updatedBy\": 5,\n                \"created_at\": \"2025-02-20T01:39:29.000Z\",\n                \"updated_at\": \"2025-04-26T01:08:24.000Z\"\n            },\n            {\n                \"id\": 11,\n                \"title\": \"File upload size limit not enforced - awaiting input\",\n                \"description\": \"Files larger than 5MB upload successfully causing server errors. Assignee updated. Patch development underway. Reproducing the issue on staging.\",\n                \"status\": \"open\",\n                \"priority\": \"medium\",\n                \"assignee\": 22,\n                \"createdBy\": 35,\n                \"updatedBy\": 20,\n                \"created_at\": \"2024-07-27T10:12:15.000Z\",\n                \"updated_at\": \"2024-09-11T23:09:07.000Z\"\n            },\n            {\n                \"id\": 15,\n                \"title\": \"Slow page load on homepage - follow-up\",\n                \"description\": \"Homepage takes more than 10 seconds to load during peak hours. Assignee updated. Currently investigating root cause. Resolved with rollback. Testing in local environment. Reproducing the issue on staging.\",\n                \"status\": \"open\",\n                \"priority\": \"medium\",\n                \"assignee\": 19,\n                \"createdBy\": 12,\n                \"updatedBy\": 43,\n                \"created_at\": \"2024-06-21T07:43:36.000Z\",\n                \"updated_at\": \"2024-07-07T05:59:34.000Z\"\n            },\n            {\n                \"id\": 13,\n                \"title\": \"Notifications delayed by up to 1 hour - ready for close\",\n                \"description\": \"Users report notification delays especially on weekends. Assignee updated. Code review ongoing. Waiting for more info from reporter. Fix merged into main branch.\",\n                \"status\": \"resolved\",\n                \"priority\": \"high\",\n                \"assignee\": 87,\n                \"createdBy\": 66,\n                \"updatedBy\": 87,\n                \"created_at\": \"2024-07-30T09:20:44.000Z\",\n                \"updated_at\": \"2025-02-03T22:35:13.000Z\"\n            },\n            {\n                \"id\": 20,\n                \"title\": \"Broken pagination links on blog - bugfix\",\n                \"description\": \"Next page links return 404 errors on blog section. Assignee updated. Preparing fix for review. Patch scheduled for production. Logs collected for debugging. QA verified fix successfully. Under review by support team.\",\n                \"status\": \"open\",\n                \"priority\": \"high\",\n                \"assignee\": 98,\n                \"createdBy\": 71,\n                \"updatedBy\": 62,\n                \"created_at\": \"2024-12-29T10:47:22.000Z\",\n                \"updated_at\": \"2025-02-18T02:29:10.000Z\"\n            },\n            {\n                \"id\": 17,\n                \"title\": \"Incorrect total price in cart summary - ready for close\",\n                \"description\": \"Cart summary sometimes calculates total price incorrectly. Assignee updated. Testing in local environment. Pending prioritization. Patch scheduled for production.\",\n                \"status\": \"resolved\",\n                \"priority\": \"high\",\n                \"assignee\": 49,\n                \"createdBy\": 85,\n                \"updatedBy\": 73,\n                \"created_at\": \"2025-01-04T09:20:08.000Z\",\n                \"updated_at\": \"2025-01-20T17:31:49.000Z\"\n            },\n            {\n                \"id\": 14,\n                \"title\": \"Search bar not clearing on reset - investigation\",\n                \"description\": \"Reset button does not clear search input on product pages. Assignee updated. Working on a hotfix. User feedback requested. Root cause analysis in progress. Blocked by dependency update.\",\n                \"status\": \"open\",\n                \"priority\": \"high\",\n                \"assignee\": 61,\n                \"createdBy\": 43,\n                \"updatedBy\": 63,\n                \"created_at\": \"2024-11-23T06:06:51.000Z\",\n                \"updated_at\": \"2024-12-09T07:22:35.000Z\"\n            },\n            {\n                \"id\": 12,\n                \"title\": \"Broken link on Terms and Conditions page - fix verified\",\n                \"description\": \"The \\\"Privacy Policy\\\" link leads to a 404 page. Assignee updated. Currently investigating root cause. Temporary workaround implemented.\",\n                \"status\": \"resolved\",\n                \"priority\": \"high\",\n                \"assignee\": 60,\n                \"createdBy\": 35,\n                \"updatedBy\": 2,\n                \"created_at\": \"2025-03-04T20:14:02.000Z\",\n                \"updated_at\": \"2025-05-11T15:40:51.000Z\"\n            },\n            {\n                \"id\": 10,\n                \"title\": \"Session timeout too short - ready for close\",\n                \"description\": \"Users are logged out after 5 minutes of inactivity instead of 30. Assignee updated. Debugging intermittent failure. Temporary workaround implemented.\",\n                \"status\": \"resolved\",\n                \"priority\": \"high\",\n                \"assignee\": 87,\n                \"createdBy\": 72,\n                \"updatedBy\": 63,\n                \"created_at\": \"2025-03-04T22:13:10.000Z\",\n                \"updated_at\": \"2025-05-05T22:52:15.000Z\"\n            }\n        ],\n        \"pagination\": {\n            \"totalItems\": 31,\n            \"totalPages\": 3,\n            \"currentPage\": 1,\n            \"pageSize\": 15\n        }\n    },\n    \"errors\": null\n}"
+				}
+			]
 		},
 		{
 			"name": "Get Issue by ID (Task 2)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has the required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData).to.have.property('title');",
+							"    pm.expect(responseData).to.have.property('description');",
+							"    pm.expect(responseData).to.have.property('status');",
+							"    pm.expect(responseData).to.have.property('priority');",
+							"    pm.expect(responseData).to.have.property('assignee');",
+							"    pm.expect(responseData).to.have.property('createdBy');",
+							"    pm.expect(responseData).to.have.property('updatedBy');",
+							"    pm.expect(responseData).to.have.property('updatedAt');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Assignee email is in a valid email format\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData.data.assignee.email).to.be.a('string').and.to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+							"});",
+							"",
+							"pm.test(\"Created by email is in a valid email format\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData.data.createdBy.email).to.be.a('string').and.to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+							"});",
+							"",
+							"pm.test(\"Updated by email is in a valid email format\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData.data.updatedBy.email).to.be.a('string').and.to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Message is an empty string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.message).to.equal(\"\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [
@@ -571,10 +2103,110 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Get Issue by ID",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues",
+								"1"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "671"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:21:04 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Request succeeded\",\n    \"data\": {\n        \"title\": \"Login button not responding on mobile - resolved\",\n        \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy. Resolved after patch deployment. Initial investigation pending.\",\n        \"status\": \"open\",\n        \"priority\": \"critical\",\n        \"assignee\": {\n            \"email\": \"Myles.Fritsch@gmail.com\",\n            \"name\": \"Myles Fritsch\"\n        },\n        \"createdBy\": {\n            \"email\": \"Salma_Franey56@gmail.com\",\n            \"name\": \"Salma Franey\"\n        },\n        \"updatedBy\": {\n            \"email\": \"Anabelle.Romaguera@gmail.com\",\n            \"name\": \"Anabelle Romaguera\"\n        },\n        \"updatedAt\": \"2025-03-27T20:26:02.000Z\"\n    },\n    \"errors\": null\n}"
+				}
+			]
 		},
 		{
 			"name": "List Issue Revisions (Task 4)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Success field should be true\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.success).to.be.true;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Data array is present and contains at least one element\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.have.property('data').that.is.an('array').and.not.empty;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Issue object has non-empty title, status, priority, and description fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.data).to.be.an('array');",
+							"    responseData.data.forEach(function(revision) {",
+							"        pm.expect(revision.issue).to.exist;",
+							"        pm.expect(revision.issue.title).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Title should not be empty\");",
+							"        pm.expect(revision.issue.status).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Status should not be empty\");",
+							"        pm.expect(revision.issue.priority).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Priority should not be empty\");",
+							"        pm.expect(revision.issue.description).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Description should not be empty\");",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [
@@ -599,10 +2231,104 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "List Issue Revisions",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1/revisions",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues",
+								"1",
+								"revisions"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "3968"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:21:16 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Request succeeded\",\n    \"data\": [\n        {\n            \"revisionNumber\": 1,\n            \"issue\": {\n                \"title\": \"Login button not responding on mobile\",\n                \"status\": \"open\",\n                \"assignee\": 21,\n                \"priority\": \"medium\",\n                \"createdBy\": 40,\n                \"description\": \"The login button does not trigger any action on iOS devices.\"\n            },\n            \"changes\": {},\n            \"updatedBy\": 9,\n            \"updatedAt\": \"2025-03-13T20:26:02.000Z\"\n        },\n        {\n            \"revisionNumber\": 2,\n            \"issue\": {\n                \"title\": \"Login button not responding on mobile\",\n                \"status\": \"open\",\n                \"assignee\": 15,\n                \"priority\": \"medium\",\n                \"createdBy\": 40,\n                \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated.\"\n            },\n            \"changes\": {\n                \"assignee\": 15,\n                \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated.\"\n            },\n            \"updatedBy\": 90,\n            \"updatedAt\": \"2025-03-16T20:26:02.000Z\"\n        },\n        {\n            \"revisionNumber\": 3,\n            \"issue\": {\n                \"title\": \"Login button not responding on mobile\",\n                \"status\": \"in_progress\",\n                \"assignee\": 15,\n                \"priority\": \"medium\",\n                \"createdBy\": 40,\n                \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging.\"\n            },\n            \"changes\": {\n                \"status\": \"in_progress\",\n                \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging.\"\n            },\n            \"updatedBy\": 9,\n            \"updatedAt\": \"2025-03-18T20:26:02.000Z\"\n        },\n        {\n            \"revisionNumber\": 4,\n            \"issue\": {\n                \"title\": \"Login button not responding on mobile - resolved\",\n                \"status\": \"resolved\",\n                \"assignee\": 15,\n                \"priority\": \"medium\",\n                \"createdBy\": 40,\n                \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented.\"\n            },\n            \"changes\": {\n                \"title\": \"Login button not responding on mobile - resolved\",\n                \"status\": \"resolved\",\n                \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented.\"\n            },\n            \"updatedBy\": 15,\n            \"updatedAt\": \"2025-03-21T20:26:02.000Z\"\n        },\n        {\n            \"revisionNumber\": 5,\n            \"issue\": {\n                \"title\": \"Login button not responding on mobile - resolved\",\n                \"status\": \"closed\",\n                \"assignee\": null,\n                \"priority\": \"low\",\n                \"createdBy\": 40,\n                \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy.\"\n            },\n            \"changes\": {\n                \"status\": \"closed\",\n                \"assignee\": null,\n                \"priority\": \"low\",\n                \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy.\"\n            },\n            \"updatedBy\": 64,\n            \"updatedAt\": \"2025-03-22T20:26:02.000Z\"\n        },\n        {\n            \"revisionNumber\": 6,\n            \"issue\": {\n                \"title\": \"Login button not responding on mobile - resolved\",\n                \"status\": \"resolved\",\n                \"assignee\": 49,\n                \"priority\": \"medium\",\n                \"createdBy\": 40,\n                \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy. Resolved after patch deployment.\"\n            },\n            \"changes\": {\n                \"status\": \"resolved\",\n                \"assignee\": 49,\n                \"priority\": \"medium\",\n                \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy. Resolved after patch deployment.\"\n            },\n            \"updatedBy\": 29,\n            \"updatedAt\": \"2025-03-24T20:26:02.000Z\"\n        },\n        {\n            \"revisionNumber\": 7,\n            \"issue\": {\n                \"title\": \"Login button not responding on mobile - resolved\",\n                \"status\": \"open\",\n                \"assignee\": 49,\n                \"priority\": \"critical\",\n                \"createdBy\": 40,\n                \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy. Resolved after patch deployment. Initial investigation pending.\"\n            },\n            \"changes\": {\n                \"status\": \"open\",\n                \"priority\": \"critical\",\n                \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy. Resolved after patch deployment. Initial investigation pending.\"\n            },\n            \"updatedBy\": 86,\n            \"updatedAt\": \"2025-03-27T20:26:02.000Z\"\n        }\n    ],\n    \"errors\": null\n}"
+				}
+			]
 		},
 		{
 			"name": "Compare Issue Revisions (Task 6)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content type is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Success field is true\", function () {",
+							"  const responseData = pm.response.json();",
+							"  pm.expect(responseData.success).to.be.true;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Data object contains before, after, changes, and revisions keys\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.data).to.include.all.keys('before', 'after', 'changes', 'revisions');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Revisions array contains at least one element\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.revisions).to.be.an('array').that.is.not.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [
@@ -642,7 +2368,77 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Compare Issue Revisions",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-ID",
+								"value": "{{client_id}}"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1/revisions/compare?from=1&to=10&order=asc",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{api_prefix}}",
+								"{{api_version}}",
+								"issues",
+								"1",
+								"revisions",
+								"compare"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "1"
+								},
+								{
+									"key": "to",
+									"value": "10"
+								},
+								{
+									"key": "order",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "4914"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 26 May 2025 07:21:26 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Request succeeded\",\n    \"data\": {\n        \"before\": {\n            \"title\": \"Login button not responding on mobile\",\n            \"status\": \"open\",\n            \"assignee\": 21,\n            \"priority\": \"medium\",\n            \"createdBy\": 40,\n            \"description\": \"The login button does not trigger any action on iOS devices.\"\n        },\n        \"after\": {\n            \"title\": \"Login button not responding on mobile - resolved\",\n            \"status\": \"open\",\n            \"assignee\": 49,\n            \"priority\": \"critical\",\n            \"createdBy\": 40,\n            \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy. Resolved after patch deployment. Initial investigation pending.\"\n        },\n        \"changes\": {\n            \"title\": \"Login button not responding on mobile - resolved\",\n            \"assignee\": 49,\n            \"priority\": \"critical\",\n            \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy. Resolved after patch deployment. Initial investigation pending.\"\n        },\n        \"revisions\": [\n            {\n                \"revisionNumber\": 1,\n                \"issue\": {\n                    \"title\": \"Login button not responding on mobile\",\n                    \"status\": \"open\",\n                    \"assignee\": 21,\n                    \"priority\": \"medium\",\n                    \"createdBy\": 40,\n                    \"description\": \"The login button does not trigger any action on iOS devices.\"\n                },\n                \"changes\": {},\n                \"updatedBy\": 9,\n                \"updatedAt\": \"2025-03-13T20:26:02.000Z\"\n            },\n            {\n                \"revisionNumber\": 2,\n                \"issue\": {\n                    \"title\": \"Login button not responding on mobile\",\n                    \"status\": \"open\",\n                    \"assignee\": 15,\n                    \"priority\": \"medium\",\n                    \"createdBy\": 40,\n                    \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated.\"\n                },\n                \"changes\": {\n                    \"assignee\": 15,\n                    \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated.\"\n                },\n                \"updatedBy\": 90,\n                \"updatedAt\": \"2025-03-16T20:26:02.000Z\"\n            },\n            {\n                \"revisionNumber\": 3,\n                \"issue\": {\n                    \"title\": \"Login button not responding on mobile\",\n                    \"status\": \"in_progress\",\n                    \"assignee\": 15,\n                    \"priority\": \"medium\",\n                    \"createdBy\": 40,\n                    \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging.\"\n                },\n                \"changes\": {\n                    \"status\": \"in_progress\",\n                    \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging.\"\n                },\n                \"updatedBy\": 9,\n                \"updatedAt\": \"2025-03-18T20:26:02.000Z\"\n            },\n            {\n                \"revisionNumber\": 4,\n                \"issue\": {\n                    \"title\": \"Login button not responding on mobile - resolved\",\n                    \"status\": \"resolved\",\n                    \"assignee\": 15,\n                    \"priority\": \"medium\",\n                    \"createdBy\": 40,\n                    \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented.\"\n                },\n                \"changes\": {\n                    \"title\": \"Login button not responding on mobile - resolved\",\n                    \"status\": \"resolved\",\n                    \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented.\"\n                },\n                \"updatedBy\": 15,\n                \"updatedAt\": \"2025-03-21T20:26:02.000Z\"\n            },\n            {\n                \"revisionNumber\": 5,\n                \"issue\": {\n                    \"title\": \"Login button not responding on mobile - resolved\",\n                    \"status\": \"closed\",\n                    \"assignee\": null,\n                    \"priority\": \"low\",\n                    \"createdBy\": 40,\n                    \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy.\"\n                },\n                \"changes\": {\n                    \"status\": \"closed\",\n                    \"assignee\": null,\n                    \"priority\": \"low\",\n                    \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy.\"\n                },\n                \"updatedBy\": 64,\n                \"updatedAt\": \"2025-03-22T20:26:02.000Z\"\n            },\n            {\n                \"revisionNumber\": 6,\n                \"issue\": {\n                    \"title\": \"Login button not responding on mobile - resolved\",\n                    \"status\": \"resolved\",\n                    \"assignee\": 49,\n                    \"priority\": \"medium\",\n                    \"createdBy\": 40,\n                    \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy. Resolved after patch deployment.\"\n                },\n                \"changes\": {\n                    \"status\": \"resolved\",\n                    \"assignee\": 49,\n                    \"priority\": \"medium\",\n                    \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy. Resolved after patch deployment.\"\n                },\n                \"updatedBy\": 29,\n                \"updatedAt\": \"2025-03-24T20:26:02.000Z\"\n            },\n            {\n                \"revisionNumber\": 7,\n                \"issue\": {\n                    \"title\": \"Login button not responding on mobile - resolved\",\n                    \"status\": \"open\",\n                    \"assignee\": 49,\n                    \"priority\": \"critical\",\n                    \"createdBy\": 40,\n                    \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy. Resolved after patch deployment. Initial investigation pending.\"\n                },\n                \"changes\": {\n                    \"status\": \"open\",\n                    \"priority\": \"critical\",\n                    \"description\": \"The login button does not trigger any action on iOS devices. Assignee updated. Logs collected for debugging. Temporary workaround implemented. Archived per policy. Resolved after patch deployment. Initial investigation pending.\"\n                },\n                \"updatedBy\": 86,\n                \"updatedAt\": \"2025-03-27T20:26:02.000Z\"\n            }\n        ]\n    },\n    \"errors\": null\n}"
+				}
+			]
 		}
 	],
 	"auth": {
@@ -650,7 +2446,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODIxMzU0NCwiZXhwIjoxNzQ4MjI0MzQ0fQ.AdnjsB5CrF5N4Hg0ROR9I8lxxfnflKlTLYgdIm58XNc",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODI0MDg5OCwiZXhwIjoxNzQ4MjUxNjk4fQ.J8rB0v-Eo5fMT5hUaVpmXYhZXGMzxt_GoKrww6CG7Pw",
 				"type": "string"
 			}
 		]
