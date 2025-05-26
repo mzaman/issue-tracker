@@ -11,7 +11,21 @@ info:
     ## Versioning and Prefix
     - You can switch between versions using the path parameters like `/v1`, `/v2`, or omit when not needed.
     - Prefix can also be changed dynamically depending on environment setup.
+    - For example, `/api/v1` or `/api/v2` or `/v1` or `/v2` depending on the setup. And all APIs are accessible in all combinations of:
+      - No prefix (/)
+      - Version only (/v1, /v2, etc.)
+      - API prefix only (/api)
+      - API prefix + version (/api/v1, /api/v2, etc.)
 
+    - When version grows (v1, v2, and so on), as a future-proof solution, this setup allows:
+      -	/health
+      -	/api/health
+      -	/v1/health
+      -	/v2/health
+      -	/api/v1/health
+      -	/api/v2/health
+      - etc...
+      
     * All endpoints require `X-Client-ID` (Value: `my-client-id-123`).  
     * Some endpoints require Bearer Token from login response.
 
@@ -55,7 +69,7 @@ servers:
       protocol:
         default: https
       hostname:
-        default: api.Trialday.com
+        default: api.testilo.com
       port:
         default: '8080'
 

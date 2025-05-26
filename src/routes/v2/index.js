@@ -9,9 +9,9 @@ const healthRoutes = require('./health');
 const router = new Router();
 
 // Mount resource routes for this version
-router.use('/issues', issuesRoutes.routes(), issuesRoutes.allowedMethods());
-router.use('/auth', authRoutes.routes(), authRoutes.allowedMethods());
-router.use('/discovery', discoveryRoutes.routes(), healthRoutes.allowedMethods());
+router.use('/', discoveryRoutes.routes(), healthRoutes.allowedMethods());
 router.use('/health', healthRoutes.routes(), healthRoutes.allowedMethods());
+router.use('/auth', authRoutes.routes(), authRoutes.allowedMethods());
+router.use('/issues', issuesRoutes.routes(), issuesRoutes.allowedMethods());
 
 module.exports = router;
