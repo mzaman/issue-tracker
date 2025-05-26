@@ -267,11 +267,7 @@ paths:
         '400':
           $ref: '#/components/responses/MissingClientIdHeader'
         '403':
-          description: Forbidden - Invalid client ID
-        # '401':
-        #   description: Unauthorized access
-        # '403':
-        #   $ref: '#/components/responses/InvalidClientId'
+          $ref: '#/components/responses/InvalidClientId'
         '200':
           description: Service discovery details
           content:
@@ -289,7 +285,7 @@ paths:
         '400':
           $ref: '#/components/responses/MissingClientIdHeader'
         '403':
-          description: Forbidden - Invalid client ID
+          $ref: '#/components/responses/InvalidClientId'
         '200':
           description: Server is healthy
           content:
@@ -322,7 +318,7 @@ paths:
         '400':
           $ref: '#/components/responses/MissingClientIdHeader'
         '403':
-          description: Forbidden - Invalid client ID
+          $ref: '#/components/responses/InvalidClientId'
         '200':
           description: Successfully authenticated
           content:
@@ -341,7 +337,7 @@ paths:
         '400':
           $ref: '#/components/responses/MissingClientIdHeader'
         '403':
-          description: Forbidden - Invalid client ID
+          $ref: '#/components/responses/InvalidClientId'
         '200':
           description: List of issues
           content:
@@ -371,7 +367,7 @@ paths:
         '400':
           $ref: '#/components/responses/MissingClientIdHeader'
         '403':
-          description: Forbidden - Invalid client ID
+          $ref: '#/components/responses/InvalidClientId'
         '200':
           description: Issue found
           content:
@@ -407,7 +403,7 @@ paths:
         '400':
           $ref: '#/components/responses/MissingClientIdHeader'
         '403':
-          description: Forbidden - Invalid client ID
+          $ref: '#/components/responses/InvalidClientId'
         '200':
           description: Issue updated
           content:
@@ -437,7 +433,7 @@ paths:
         '400':
           $ref: '#/components/responses/MissingClientIdHeader'
         '403':
-          description: Forbidden - Invalid client ID
+          $ref: '#/components/responses/InvalidClientId'
         '200':
           description: Issue replaced
           content:
@@ -461,7 +457,7 @@ paths:
         '400':
           $ref: '#/components/responses/MissingClientIdHeader'
         '403':
-          description: Forbidden - Invalid client ID
+          $ref: '#/components/responses/InvalidClientId'
         '204':
           description: Issue deleted
         '404':
@@ -482,7 +478,7 @@ paths:
         '400':
           $ref: '#/components/responses/MissingClientIdHeader'
         '403':
-          description: Forbidden - Invalid client ID
+          $ref: '#/components/responses/InvalidClientId'
         '200':
           description: Matching issues
           content:
