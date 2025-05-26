@@ -4,7 +4,6 @@
 require('dotenv').config();
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
-const http = require('http');
 
 const errorHandler = require('./src/middleware/errorHandler');
 const { jwtMiddleware, clientIdMiddleware } = require('./src/middleware/auth');
@@ -23,7 +22,6 @@ app.use(jwtMiddleware);
 app.use(apiRouter.routes());
 app.use(apiRouter.allowedMethods());
 
-module.exports = { app };
 
 let server;
 

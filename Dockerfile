@@ -12,9 +12,9 @@ COPY . .
 # Install nodemon globally for dev hot reload
 RUN npm install -g nodemon
 
-EXPOSE 8080
+EXPOSE 8080 5555
 
-CMD ["nodemon", "index.js"]
+CMD ["npm", "run", "dev"]
 
 
 # Stage 2: Production stage

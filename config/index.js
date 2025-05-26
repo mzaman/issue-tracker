@@ -1,3 +1,4 @@
+const swaggerUiKoa = require('swagger-ui-koa');
 
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'dev'}` });
 
@@ -14,5 +15,8 @@ module.exports = {
         database: process.env.DB_NAME,
         port: process.env.DB_PORT || 3306,
         dialect: process.env.DB_DIALECT || 'mysql',
+    },
+    swaggerUi: {
+        port: process.env.SWAGGER_LOCAL_PORT || 5555,
     }
 };

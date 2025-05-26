@@ -1,0 +1,714 @@
+{
+	"info": {
+		"_postman_id": "4b05dfb0-7636-447d-a649-f2ec4e9f01f4",
+		"name": "Trail Day REST API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "697454"
+	},
+	"item": [
+		{
+			"name": "Discovery",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "my-client-id-123",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Health Check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/health",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 1: Create New Issue (Please login first) *",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Bug in issue-service\",\n    \"description\": \"Ah snap :(\",\n    \"status\": \"open\",\n    \"priority\": \"medium\",\n    \"assignee\": null\n}"
+				},
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 2: Get Issues",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues?page=1&pageSize=5&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=id&sortOrder=desc&search=",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "pageSize",
+							"value": "5"
+						},
+						{
+							"key": "status",
+							"value": "open,in_progress,resolved"
+						},
+						{
+							"key": "priority",
+							"value": "medium,high,critical"
+						},
+						{
+							"key": "sortBy",
+							"value": "id"
+						},
+						{
+							"key": "sortOrder",
+							"value": "desc"
+						},
+						{
+							"key": "search",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 2.1: Get Issue by ID (36)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/36",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues",
+						"36"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 3: Update Issue with ID (36)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Bug in issue-service\",\n    \"description\": \"It does not generate revisions\",\n    \"status\": \"in_progress\",\n    \"priority\": \"high\",\n    \"assignee\": 3\n}"
+				},
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/36",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues",
+						"36"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 4: List Revisions (Issue ID: 36)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/36/revisions",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues",
+						"36",
+						"revisions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 5: LOGIN (Set bearer token after login) ***",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\":\"admin@example.com\",\"password\":\"Password123\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/auth/login",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 5.1: X-Client-ID Access Control (Missing header)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/issues/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"issues",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 5.2: X-Client-ID Access (Forbidden)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "Invalid_X-Client-ID_Test"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 5.3: Authorization (Unauthorized)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 5.4: Authorization (Invalid Token)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODEzODExNSwiZXhwIjoxNzQ4MTQ4OTE1fQ.NXRDBKS8hz360z2YHQlji8BhSepVNE0wT5GXtmob7Ok***",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 5.5: Authorization (Expired Token)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODEzODExNSwiZXhwIjoxNzQ4MTQ4OTE1fQ.NXRDBKS8hz360z2YHQlji8BhSepVNE0wT5GXtmob7Ok",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 6: Compare Revisions (Issue ID: 36)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/36/revisions/compare?from=1&to=10&order=desc",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues",
+						"36",
+						"revisions",
+						"compare"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "1"
+						},
+						{
+							"key": "to",
+							"value": "10"
+						},
+						{
+							"key": "order",
+							"value": "desc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get/Search/Filter/Sort Issues with Pagination (Task 2)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues?page=1&pageSize=15&status=open,in_progress,resolved&priority=medium,high,critical&sortBy=priority&sortOrder=desc&search=",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "pageSize",
+							"value": "15"
+						},
+						{
+							"key": "status",
+							"value": "open,in_progress,resolved"
+						},
+						{
+							"key": "priority",
+							"value": "medium,high,critical"
+						},
+						{
+							"key": "sortBy",
+							"value": "priority"
+						},
+						{
+							"key": "sortOrder",
+							"value": "desc"
+						},
+						{
+							"key": "search",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Issue by ID (Task 2)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Issue Revisions (Task 4)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1/revisions",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues",
+						"1",
+						"revisions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Compare Issue Revisions (Task 6)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-ID",
+						"value": "{{client_id}}"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{hostname}}:{{port}}/{{api_prefix}}/{{api_version}}/issues/1/revisions/compare?from=1&to=10&order=asc",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{api_prefix}}",
+						"{{api_version}}",
+						"issues",
+						"1",
+						"revisions",
+						"compare"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "1"
+						},
+						{
+							"key": "to",
+							"value": "10"
+						},
+						{
+							"key": "order",
+							"value": "asc"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODIxMzU0NCwiZXhwIjoxNzQ4MjI0MzQ0fQ.AdnjsB5CrF5N4Hg0ROR9I8lxxfnflKlTLYgdIm58XNc",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "protocol",
+			"value": "http"
+		},
+		{
+			"key": "hostname",
+			"value": "localhost",
+			"type": "string"
+		},
+		{
+			"key": "port",
+			"value": "8080",
+			"type": "string"
+		},
+		{
+			"key": "client_id",
+			"value": "my-client-id-123"
+		},
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "api_prefix",
+			"value": "api",
+			"type": "string"
+		},
+		{
+			"key": "api_version",
+			"value": "v1",
+			"type": "string"
+		}
+	]
+}

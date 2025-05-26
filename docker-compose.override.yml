@@ -15,3 +15,4 @@ services:
       - NODE_ENV=development
     ports:
       - ${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}
+      - ${SWAGGER_LOCAL_PORT}:${SWAGGER_DOCKER_PORT}
