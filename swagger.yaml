@@ -12,8 +12,8 @@ info:
     - You can switch between versions using the path parameters like `/v1`, `/v2`, or omit when not needed.
     - Prefix can also be changed dynamically depending on environment setup.
 
-    ✅ All endpoints require `X-Client-ID`.  
-    🔐 Some endpoints require Bearer Token from login response.
+    * All endpoints require `X-Client-ID` (Value: `my-client-id-123`).  
+    * Some endpoints require Bearer Token from login response.
 
 
 servers:
@@ -55,13 +55,257 @@ servers:
       protocol:
         default: https
       hostname:
-        default: api.trailday.com
+        default: api.Trialday.com
       port:
         default: '8080'
 
 security:
   - BearerAuth: []
-  - X-Client-ID: []
+  - ClientIdAuth: []
+
+tags:
+  - name: System
+    description: System related operations
+  - name: Auth
+    description: Authentication related operations
+  - name: Issues
+    description: CRUD and filter operations for issue tracking
+
+paths:  
+  /:
+    get:
+      summary: "Service Discovery Endpoint"
+      tags: [System]
+      operationId: getDiscovery
+      responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          $ref: '#/components/responses/InvalidClientId'
+        '200':
+          description: Service discovery details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoveryResponse'
+            
+
+  /health:
+    get:
+      summary: "Health Check of API Server"
+      tags: [System]
+      operationId: getHealthCheck
+      responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          $ref: '#/components/responses/InvalidClientId'
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            example: UP
+        '503':
+          description: Service unavailable
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: "User login and token generation (Task 5)"
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          $ref: '#/components/responses/InvalidClientId'
+        '200':
+          description: Successfully authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+
+  /issues:
+    get:
+      summary: "Retrieve all issues (Task 2)"
+      tags: [Issues]
+      operationId: getAllIssues
+      responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          $ref: '#/components/responses/InvalidClientId'
+        '200':
+          description: List of issues
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Issue'
+
+  /issues/{id}:
+    get:
+      tags: [Issues]
+      summary: "Get issue by ID (Task 2)"
+      operationId: getIssueById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          $ref: '#/components/responses/InvalidClientId'
+        '200':
+          description: Issue found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Issue'
+        '404':
+          description: Issue not found
+
+    put:
+      tags: [Issues]
+      summary: "Update an issue (Task 3)"
+      operationId: replaceIssue
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Issue'
+      responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          $ref: '#/components/responses/InvalidClientId'
+        '200':
+          description: Issue replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+        '404':
+          description: Issue not found
+
+    # patch:
+    #   tags: [Issues]
+    #   summary: "[T4] Partially update issue"
+    #   operationId: patchIssue
+    #   parameters:
+    #     - in: path
+    #       name: id
+    #       required: true
+    #       schema:
+    #         type: string
+    #   requestBody:
+    #     required: true
+    #     content:
+    #       application/json:
+    #         schema:
+    #           type: object
+    #           additionalProperties: true
+    #   responses:
+    #     '400':
+    #       $ref: '#/components/responses/MissingClientIdHeader'
+    #     '403':
+    #       $ref: '#/components/responses/InvalidClientId'
+    #     '200':
+    #       description: Issue updated
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/BaseResponse'
+    #     '404':
+    #       description: Issue not found
+
+    # delete:
+    #   tags: [Issues]
+    #   summary: "[T6] Delete issue"
+    #   operationId: deleteIssue
+    #   parameters:
+    #     - in: path
+    #       name: id
+    #       required: true
+    #       schema:
+    #         type: string
+    #   responses:
+    #     '400':
+    #       $ref: '#/components/responses/MissingClientIdHeader'
+    #     '403':
+    #       $ref: '#/components/responses/InvalidClientId'
+    #     '204':
+    #       description: Issue deleted
+    #     '404':
+    #       description: Issue not found
+
+  # /issues/filter:
+  #   post:
+  #     tags: [Issues]
+  #     summary: "[T7] Filter issues by status and priority"
+  #     operationId: filterIssues
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: '#/components/schemas/IssueFilter'
+  #     responses:
+  #       '400':
+  #         $ref: '#/components/responses/MissingClientIdHeader'
+  #       '403':
+  #         $ref: '#/components/responses/InvalidClientId'
+  #       '200':
+  #         description: Matching issues
+  #         content:
+  #           application/json:
+  #             schema:
+  #               allOf:
+  #                 - $ref: '#/components/schemas/BaseResponse'
+  #                 - type: object
+  #                   properties:
+  #                     data:
+  #                       type: array
+  #                       items:
+  #                         $ref: '#/components/schemas/Issue'
 
 components:
   securitySchemes:
@@ -69,7 +313,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    X-Client-ID:
+    ClientIdAuth:
       type: apiKey
       in: header
       name: X-Client-ID
@@ -192,11 +436,11 @@ components:
         email:
           type: string
           format: email
-          example: user@example.com
+          example: admin@example.com
         password:
           type: string
           format: password
-          example: secret123
+          example: Password123
 
     LoginResponse:
       allOf:
@@ -248,247 +492,3 @@ components:
         priority:
           type: string
           example: high
-
-tags:
-  - name: System
-    description: System related operations
-  - name: Auth
-    description: Authentication related operations
-  - name: Issues
-    description: CRUD and filter operations for issue tracking
-
-paths:  
-  /:
-    get:
-      tags: [System]
-      summary: "[T8] Service Discovery Endpoint"
-      operationId: getDiscovery
-      responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
-        '200':
-          description: Service discovery details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DiscoveryResponse'
-            
-
-  /health:
-    get:
-      tags: [System]
-      summary: "[T9] Health Check of API Server"
-      operationId: getHealthCheck
-      responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
-        '200':
-          description: Server is healthy
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/BaseResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        properties:
-                          status:
-                            type: string
-                            example: UP
-        '503':
-          description: Service unavailable
-  /auth/login:
-    post:
-      tags: [Auth]
-      summary: "[T1] User login and token generation"
-      operationId: loginUser
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginRequest'
-      responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
-        '200':
-          description: Successfully authenticated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LoginResponse'
-        '401':
-          description: Invalid credentials
-
-  /issues:
-    get:
-      tags: [Issues]
-      summary: "[T2] Retrieve all issues"
-      operationId: getAllIssues
-      responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
-        '200':
-          description: List of issues
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/BaseResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Issue'
-
-  /issues/{id}:
-    get:
-      tags: [Issues]
-      summary: "[T3] Get issue by ID"
-      operationId: getIssueById
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
-        '200':
-          description: Issue found
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/BaseResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/Issue'
-        '404':
-          description: Issue not found
-
-    patch:
-      tags: [Issues]
-      summary: "[T4] Partially update issue"
-      operationId: patchIssue
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties: true
-      responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
-        '200':
-          description: Issue updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BaseResponse'
-        '404':
-          description: Issue not found
-
-    put:
-      tags: [Issues]
-      summary: "[T5] Replace an issue"
-      operationId: replaceIssue
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Issue'
-      responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
-        '200':
-          description: Issue replaced
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BaseResponse'
-        '404':
-          description: Issue not found
-
-    delete:
-      tags: [Issues]
-      summary: "[T6] Delete issue"
-      operationId: deleteIssue
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
-        '204':
-          description: Issue deleted
-        '404':
-          description: Issue not found
-
-  /issues/filter:
-    post:
-      tags: [Issues]
-      summary: "[T7] Filter issues by status and priority"
-      operationId: filterIssues
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/IssueFilter'
-      responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
-        '200':
-          description: Matching issues
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/BaseResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Issue'
