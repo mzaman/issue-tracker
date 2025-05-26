@@ -8,6 +8,11 @@ const healthRoutes = require('./health');
 
 const router = new Router();
 
+// Define routes
+router.get('/test', ctx => {
+    ctx.body = 'CORS test passed!';
+});
+
 // Mount resource routes for this version
 router.use('/issues', issuesRoutes.routes(), issuesRoutes.allowedMethods());
 router.use('/auth', authRoutes.routes(), authRoutes.allowedMethods());

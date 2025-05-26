@@ -3,6 +3,7 @@
 
 require('dotenv').config();
 const Koa = require('koa');
+const cors = require('@koa/cors');
 const bodyParser = require('koa-bodyparser');
 
 const errorHandler = require('./src/middleware/errorHandler');
@@ -11,6 +12,17 @@ const config = require('./config');
 const apiRouter = require('./src/routes');
 
 const app = new Koa();
+// Enable CORS
+// app.use(cors());
+// Apply CORS with custom config
+app.use(cors({
+  origin: 'http://localhost:5555', // Swagger UI origin
+  allowHeaders: ['Content-Type', 'Authorization', 'X-Client-ID'], // Allow custom headers
+  exposeHeaders: ['X-Client-ID'],
+  credentials: true,
+  allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+}));
+
 
 // Middleware setup
 app.use(bodyParser());
