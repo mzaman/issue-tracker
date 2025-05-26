@@ -193,28 +193,96 @@ paths:
           description: Unauthorized - Invalid or expired token
         '500':
           description: Internal Server Error
+
     get:
-      summary: "Retrieve all issues (Task 2)"
-      tags: [Issues]
+      tags:
+        - Issues
+      summary: Get all issues with filters and pagination
+      description: |
+        Retrieve a paginated list of issues filtered by status, priority, and searchable by title/description. Results are sortable and support client authentication.
       operationId: getAllIssues
+      parameters:
+        - name: X-Client-ID
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Unique client ID for API access
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+          description: Page number for pagination
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+          description: Number of items per page
+        - name: status
+          in: query
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [open, in_progress, resolved, closed]
+          description: Filter by one or more issue statuses
+        - name: priority
+          in: query
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [low, medium, high, critical]
+          description: Filter by one or more issue priorities
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [priority, created_at, updated_at, status]
+          description: Field to sort the issues by
+        - name: sortOrder
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: Sort order for results
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Text search within title and description
+      security:
+        - BearerAuth: []
+        - X-Client-ID: []
       responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
         '200':
-          description: List of issues
+          description: List of issues with pagination
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/BaseResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Issue'
+                $ref: '#/components/schemas/GetIssuesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /issues/{id}:
     get:
@@ -448,6 +516,16 @@ components:
         - missing-client-id
         - invalid-client-id
       example: missing-client-id
+
+    ErrorObject:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Name of the field where the error occurred
+        message:
+          type: string
+          description: Description of the error
 
     BaseResponse:
       type: object
@@ -771,34 +849,64 @@ components:
                   type: string
                   format: date-time
 
+    GetIssuesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            issues:
+              type: array
+              items:
+                $ref: '#/components/schemas/Issue'
+            pagination:
+              type: object
+              properties:
+                totalItems:
+                  type: integer
+                totalPages:
+                  type: integer
+                currentPage:
+                  type: integer
+                pageSize:
+                  type: integer
+        errors:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ErrorObject'
+
     Issue:
       type: object
       properties:
         id:
-          type: string
-          example: abc123
+          type: integer
         title:
           type: string
-          example: Bug in login
         description:
           type: string
-          example: When logging in, the page crashes.
         status:
           type: string
           enum: [open, in_progress, resolved, closed]
-          example: open
         priority:
           type: string
-          enum: [low, medium, high]
-          example: high
+          enum: [low, medium, high, critical]
+        assignee:
+          type: integer
+        createdBy:
+          type: integer
+        updatedBy:
+          type: integer
         createdAt:
           type: string
           format: date-time
-          example: 2025-05-25T08:00:00Z
         updatedAt:
           type: string
           format: date-time
-          example: 2025-05-25T09:00:00Z
 
     IssueFilter:
       type: object
