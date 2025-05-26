@@ -4,7 +4,7 @@ const config = require('../../config');
 const { Sequelize } = require('sequelize');
 
 // Create a Sequelize instance
-const sequelize = new Sequelize(
+module.exports = new Sequelize(
     config.mysql.database,
     config.mysql.user,
     config.mysql.password,
@@ -21,4 +21,4 @@ const sequelize = new Sequelize(
 );
 
 // Export named sequelize instance
-module.exports = { sequelize };
+// module.exports = { sequelize };

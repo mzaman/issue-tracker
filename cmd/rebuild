@@ -3,8 +3,12 @@ set -e
 
 source ./cmd/env ${1:-dev}
 
-docker-compose -f docker-compose.$ENV_FILE.yml down -v
-docker-compose -f docker-compose.$ENV_FILE.yml build --no-cache
-docker-compose -f docker-compose.$ENV_FILE.yml up -d
+DOCKER_YML=docker-compose.$ENV_FILE.yml
 
+docker-compose -f $DOCKER_YML down -v
+docker-compose -f $DOCKER_YML build --no-cache
+docker-compose -f $DOCKER_YML up -d
+
+docker-compose -f $DOCKER_YML exec -T app npm ci
+# docker-compose -f $DOCKER_YML exec -T app npm run migrate
 # ./cmd/install ${1:-dev}

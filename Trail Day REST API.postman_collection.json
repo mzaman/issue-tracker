@@ -249,7 +249,7 @@
 			"response": []
 		},
 		{
-			"name": "Task 5: Login (Set bearer token after login) *",
+			"name": "Task 5: LOGIN (Set bearer token after login) ***",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -650,7 +650,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODE4MTA2NCwiZXhwIjoxNzQ4MTkxODY0fQ.RP08UQYZSB3E_f2dMGRqe_51nqolNMEEmIHNH0jQXAk",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODIxMzU0NCwiZXhwIjoxNzQ4MjI0MzQ0fQ.AdnjsB5CrF5N4Hg0ROR9I8lxxfnflKlTLYgdIm58XNc",
 				"type": "string"
 			}
 		]

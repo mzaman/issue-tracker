@@ -31,7 +31,7 @@ versions.forEach(version => {
     }
 });
 
-// Function to list all routes
+// // Function to list all routes
 // function listRoutes(router) {
 //     const routes = [];
 //     router.stack.forEach(layer => {
@@ -45,7 +45,7 @@ versions.forEach(version => {
 //     return routes;
 // }
 
-// Log all routes
+// // Log all routes
 // const allRoutes = listRoutes(router);
 // console.log('Registered Routes:');
 // allRoutes.forEach(r => console.log(`${r.methods.join(', ')}\t${r.path}`));

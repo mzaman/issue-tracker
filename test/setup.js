@@ -1,5 +1,5 @@
 // test/setup.js
-const { sequelize } = require('../src/models/connection');
+const sequelize = require('../src/models/connection');
 const request = require('supertest');
 const { app } = require('../index.js');
 
@@ -8,7 +8,20 @@ require('jest-extended');
 
 // Set environment variable for test environment
 process.env.NODE_ENV = 'test';
-global.testContext = {};
+const validClientId = process.env.VALID_CLIENT_ID || 'test-client-id';
+
+// Create a wrapped supertest instance that includes X-Client-ID for all HTTP methods
+const baseRequest = request(app.listen());
+
+global.testContext = {
+    request: {
+        get: (url) => baseRequest.get(url).set('X-Client-ID', validClientId),
+        post: (url) => baseRequest.post(url).set('X-Client-ID', validClientId),
+        put: (url) => baseRequest.put(url).set('X-Client-ID', validClientId),
+        patch: (url) => baseRequest.patch(url).set('X-Client-ID', validClientId),
+        delete: (url) => baseRequest.delete(url).set('X-Client-ID', validClientId),
+    },
+};
 
 let server;
 beforeAll(async () => {
