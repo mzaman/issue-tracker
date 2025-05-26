@@ -84,56 +84,156 @@ tags:
     description: Authentication related operations
   - name: Issues
     description: CRUD and filter operations for issue tracking
+  - name: Task 1
+    description: Implement an endpoint that creates a new issue
+  - name: Task 2
+    description: Implement an endpoint that lists all stored issues
+  - name: Task 3
+    description: Implement an endpoint that modifies an issue
+  - name: Task 4
+    description: |
+      Implement issue revisions. Each change is a **revision**, containing the issue current state and the changes made.
+
+      _For example:_
+
+      ```json
+      {
+          "issue": {
+              "title": "Bug in issue-service",
+              "description": "It does not generate revisions"
+          },
+          "changes": {
+              "description": "It does not generate revisions"
+          },
+          "updatedAt": "2024-03-29T15:40:42.000Z"
+      }
+      ```
+
+      Requirements:
+
+      * Store issue revision when creating a new issue
+      * Store issue revision when updating an issue
+      * Implement a new endpoint that returns all revisions of a particular issue  
+      
+  - name: Task 5
+    description: |
+      * Require a valid JWT token to be present for all requests (except for the discovery and health endpoints)
+      * Clients must include an X-Client-ID header in every request. 
+      * Every time a change is made to the DB, store the change author's email address (i.e. `created_by`, `updated_by`).
+
+  - name: Task 6
+    description: |
+      Before and after comparison
+      Create an endpoint that takes two revisions of a particular issue and returns the difference between the two.
+
+      The response object should contain the following data pieces:
+      * `before`: the issue's content at revision A
+      * `after`: the issue's content at revision B
+      * `changes`: summary of the differences (i.e. listing all properties that have changed and their values)
+      * `revisions`: the full trail of revisions between version A and B
+
+      By default the comparison can work from older to newer revisions, but for bonus points you can implement comparisons from newer to older revisions as well. 
+  
+  - name: Bonus points
+    description: |
+      * Code covered by tests
+      * Generate documentation for the API
+      * Define migrations for the data schema changes
 
 paths:  
   /:
     get:
-      summary: "Service Discovery Endpoint"
-      tags: [System]
-      operationId: getDiscovery
+      summary: Service Discovery Endpoint
+      description: >
+        Returns metadata and configuration details for available services, 
+        based on the provided Client ID header.
+      tags:
+        - System
+      operationId: getServiceDiscovery
       responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
         '200':
-          description: Service discovery details
+          description: Service discovery details returned successfully.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DiscoveryResponse'
-            
-
-  /health:
-    get:
-      summary: "Health Check of API Server"
-      tags: [System]
-      operationId: getHealthCheck
-      responses:
         '400':
           $ref: '#/components/responses/MissingClientIdHeader'
         '403':
           $ref: '#/components/responses/InvalidClientId'
+            
+  /health:
+    get:
+      summary: Health Check of API Server
+      description: Returns current operational health of the API server.
+      tags:
+        - System
+      operationId: getHealthCheck
+      parameters:
+        - in: header
+          name: X-Client-Id
+          required: true
+          schema:
+            type: string
+          description: Unique client ID for validating access.
+      responses:
         '200':
           description: Server is healthy
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/BaseResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        properties:
-                          status:
-                            type: string
-                            example: UP
+                $ref: '#/components/schemas/HealthResponse'
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          $ref: '#/components/responses/InvalidClientId'
         '503':
-          description: Service unavailable
+          description: Service unavailable. The server is not healthy or under maintenance.
+
+  # /health:
+  #   get:
+  #     summary: Health Check of API Server
+  #     description: >
+  #       Returns the health status of the API server. Requires a valid client ID for access control.
+  #     tags:
+  #       - System
+  #     operationId: getHealthCheck
+  #     parameters:
+  #       - in: header
+  #         name: X-Client-Id
+  #         required: true
+  #         schema:
+  #           type: string
+  #         description: Unique client identifier for validating the request.
+  #     responses:
+  #       '200':
+  #         description: Server is healthy and responsive.
+  #         content:
+  #           application/json:
+  #             schema:
+  #               allOf:
+  #                 - $ref: '#/components/schemas/BaseResponse'
+  #                 - type: object
+  #                   properties:
+  #                     data:
+  #                       type: object
+  #                       properties:
+  #                         status:
+  #                           type: string
+  #                           example: UP
+  #                           description: Indicates the operational status of the API server.
+  #       '400':
+  #         $ref: '#/components/responses/MissingClientIdHeader'
+  #       '403':
+  #         $ref: '#/components/responses/InvalidClientId'
+  #       '503':
+  #         description: Service unavailable. The server is not healthy or undergoing maintenance.
+  
   /auth/login:
     post:
-      tags: [Auth]
+      tags: 
+        - Auth
+        - Task 5
       summary: "User login and token generation"
       operationId: loginUser
       requestBody:
@@ -143,29 +243,29 @@ paths:
             schema:
               $ref: '#/components/schemas/LoginRequest'
       responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
         '200':
           description: Successfully authenticated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoginResponse'
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
         '401':
-          description: Invalid credentials
+          $ref: '#/components/responses/InvalidCredentials'
+        '403':
+          $ref: '#/components/responses/InvalidClientId'
 
   /issues:
     post:
       tags:
         - Issues
+        - Task 1
       summary: "Create a new issue"
       description: Creates a new issue with a title, description, and optional assignee.
       operationId: createIssue
       security:
         - BearerAuth: []
-        - X-Client-ID: []
       requestBody:
         required: true
         content:
@@ -187,16 +287,17 @@ paths:
                 $ref: '#/components/schemas/IssueResponse'
         '400':
           $ref: '#/components/responses/MissingClientIdHeader'
+        '401':
+          $ref: '#/components/responses/InvalidOrExpiredToken'
         '403':
           $ref: '#/components/responses/InvalidClientId'
-        '401':
-          description: Unauthorized - Invalid or expired token
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
 
     get:
       tags:
         - Issues
+        - Task 2
       summary: Get all issues with filters and pagination
       description: |
         Retrieve a paginated list of issues filtered by status, priority, and searchable by title/description. Results are sortable and support client authentication.
@@ -261,7 +362,6 @@ paths:
           description: Text search within title and description
       security:
         - BearerAuth: []
-        - X-Client-ID: []
       responses:
         '200':
           description: List of issues with pagination
@@ -280,7 +380,9 @@ paths:
 
   /issues/{id}:
     get:
-      tags: [Issues]
+      tags: 
+        - Issues
+        - Task 2
       summary: "Get issue by ID"
       operationId: getIssueById
       parameters:
@@ -311,6 +413,7 @@ paths:
     put:
       tags:
         - Issues
+        - Task 3
       summary: Update an existing issue
       description: Update the title, description, status, priority, or assignee of a specific issue.
       operationId: updateIssue
@@ -321,15 +424,8 @@ paths:
           schema:
             type: string
           description: Unique identifier for the issue to update.
-        - name: X-Client-ID
-          in: header
-          required: true
-          schema:
-            type: string
-          description: Unique client ID for API access.
       security:
         - BearerAuth: []
-        - X-Client-ID: []
       requestBody:
         required: true
         content:
@@ -341,7 +437,7 @@ paths:
               description: "Fix the alignment in header"
               status: "in_progress"
               priority: "high"
-              assignee: "user123"
+              assignee: "123"
       responses:
         '200':
           $ref: '#/components/responses/Success'
@@ -364,6 +460,7 @@ paths:
       description: Returns a list of all revisions for a specific issue, including the full issue snapshot and changes per revision.
       tags:
         - Issues
+        - Task 4
       parameters:
         - name: id
           in: path
@@ -392,6 +489,7 @@ paths:
       description: Compares two revisions of an issue and returns the changes between them along with a list of intermediate revisions.
       tags:
         - Issues
+        - Task 6
       parameters:
         - name: id
           in: path
@@ -526,13 +624,45 @@ components:
           schema:
             $ref: '#/components/schemas/BadRequestResponse'
 
+    InvalidToken:
+      description: The provided token is invalid or malformed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    TokenExpired:
+      description: The authentication token has expired
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InvalidCredentials:
+      description: Invalid username or password
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'            
+
     InternalServerError:
       description: Internal Server Error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/InternalServerErrorResponse'
-            
+
+    InvalidOrExpiredToken:
+      description: Unauthorized - Invalid or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            statusCode: 401
+            message: "Token is invalid or has expired"
+            error: "Unauthorized" 
+              
     MissingClientIdHeader:
       description: Missing X-Client-ID header
       content:
@@ -619,6 +749,21 @@ components:
               code:
                 type: string
                 example: missing_client_id
+
+    HealthData:
+      type: object
+      properties:
+        status:
+          type: string
+          example: UP
+          description: Indicates API server health
+    HealthResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/HealthData'
 
     UnauthorizedResponse:
       allOf:
@@ -1032,7 +1177,7 @@ components:
           type: integer
         description:
           type: string
-          
+
     CompareRevisionsResponse:
       type: object
       properties:
