@@ -5,7 +5,7 @@ info:
   description: |
     This API allows clients to perform discovery, health checks, and issue tracking.
     This API requires:
-    - Setting the `X-Client-ID` header for all requests. Value: my-client-id-123
+    - Setting the `X-Client-ID` header for all requests. Set this value: `my-client-id-123` to X-Client-ID field in Authorize area.
     - Authorizing using Bearer Token after login. Set token via Authorization tab or `Authorization` header.
     
     ## Versioning and Prefix
@@ -88,7 +88,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/InvalidClientIdError'
-            
+
   schemas:
     ErrorDetail:
       type: object
@@ -264,16 +264,21 @@ paths:
       summary: "[T8] Service Discovery Endpoint"
       operationId: getDiscovery
       responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          description: Forbidden - Invalid client ID
+        # '401':
+        #   description: Unauthorized access
+        # '403':
+        #   $ref: '#/components/responses/InvalidClientId'
         '200':
           description: Service discovery details
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DiscoveryResponse'
-        '401':
-          description: Unauthorized access
-        '403':
-          description: Forbidden - Invalid client ID
+            
 
   /health:
     get:
@@ -281,6 +286,10 @@ paths:
       summary: "[T9] Health Check of API Server"
       operationId: getHealthCheck
       responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          description: Forbidden - Invalid client ID
         '200':
           description: Server is healthy
           content:
@@ -310,6 +319,10 @@ paths:
             schema:
               $ref: '#/components/schemas/LoginRequest'
       responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          description: Forbidden - Invalid client ID
         '200':
           description: Successfully authenticated
           content:
@@ -325,6 +338,10 @@ paths:
       summary: "[T2] Retrieve all issues"
       operationId: getAllIssues
       responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          description: Forbidden - Invalid client ID
         '200':
           description: List of issues
           content:
@@ -351,6 +368,10 @@ paths:
           schema:
             type: string
       responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          description: Forbidden - Invalid client ID
         '200':
           description: Issue found
           content:
@@ -383,6 +404,10 @@ paths:
               type: object
               additionalProperties: true
       responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          description: Forbidden - Invalid client ID
         '200':
           description: Issue updated
           content:
@@ -409,6 +434,10 @@ paths:
             schema:
               $ref: '#/components/schemas/Issue'
       responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          description: Forbidden - Invalid client ID
         '200':
           description: Issue replaced
           content:
@@ -429,6 +458,10 @@ paths:
           schema:
             type: string
       responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          description: Forbidden - Invalid client ID
         '204':
           description: Issue deleted
         '404':
@@ -446,6 +479,10 @@ paths:
             schema:
               $ref: '#/components/schemas/IssueFilter'
       responses:
+        '400':
+          $ref: '#/components/responses/MissingClientIdHeader'
+        '403':
+          description: Forbidden - Invalid client ID
         '200':
           description: Matching issues
           content:
