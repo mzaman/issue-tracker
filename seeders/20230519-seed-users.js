@@ -28,7 +28,8 @@ module.exports = {
             const firstName = faker.person.firstName();
             const lastName = faker.person.lastName();
             users.push({
-                email: faker.internet.email({ firstName, lastName }),
+                email: `user-${i}@example.com`,
+                // email: faker.internet.email({ firstName, lastName }),
                 name: firstName + ' ' + lastName,
                 password_hash: passwordHash,
                 created_at: faker.date.past(),
