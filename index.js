@@ -12,11 +12,12 @@ const config = require('./config');
 const apiRouter = require('./src/routes');
 
 const app = new Koa();
+
 // Enable CORS
 // app.use(cors());
 // Apply CORS with custom config
 app.use(cors({
-  origin: 'http://localhost:5555', // Swagger UI origin
+  origin: config.apiDocUrl, // Swagger UI origin
   allowHeaders: ['Content-Type', 'Authorization', 'X-Client-ID'], // Allow custom headers
   exposeHeaders: ['X-Client-ID'],
   credentials: true,

@@ -12,7 +12,7 @@ const Joi = require('joi');
 const allowedStatuses = ['open', 'in_progress', 'resolved', 'closed'];
 const allowedPriorities = ['low', 'medium', 'high', 'critical', 'urgent'];
 
-// Validation schema
+// Validation schema for create validation
 const issueSchema = Joi.object({
   title: Joi.string().max(255).required(),
   description: Joi.string().required(),
@@ -20,6 +20,15 @@ const issueSchema = Joi.object({
   priority: Joi.string().valid(...allowedPriorities).default('medium'),
   assignee: Joi.number().integer().positive().allow(null)
 });
+
+// Joi schema for update validation
+const updateSchema = Joi.object({
+  title: Joi.string().max(255),
+  description: Joi.string().allow(''),
+  status: Joi.string().valid(...allowedStatuses),
+  priority: Joi.string().valid(...allowedPriorities),
+  assignee: Joi.alternatives().try(Joi.number().integer(), Joi.string().pattern(/^\d+$/), Joi.allow(null), Joi.allow(''))
+}).or('title', 'description', 'status', 'priority', 'assignee'); // At least one field required
 
 // const baseUrl = 'http://localhost:8080'; // Commented as unused variable, good to avoid hard coded values
 
@@ -258,20 +267,23 @@ Issues.create = async (ctx) => {
   }
 };
 
-// Update an issue
-// PUT /issues/:id
-Issues.update = async (ctx) => {
+// Partially updating an issue
+// PATCH /issues/:id
+Issues.patch = async (ctx) => {
   const id = ctx.params.id;
-  const { title, description, status, priority, assignee } = ctx.request.body;
-
-  if (!title && !description && !status && !priority && typeof assignee === 'undefined') {
-    return respond.badRequest(ctx, ['At least one field must be provided to update']);
-  }
-
   const userId = ctx.state.user?.id;
+
   if (!userId) {
     return respond.unauthorized(ctx, 'Authentication required');
   }
+
+  // Validate input
+  const { error, value } = updateSchema.validate(ctx.request.body, { abortEarly: false });
+  if (error) {
+    return respond.badRequest(ctx, error.details.map(e => e.message));
+  }
+
+  const { title, description, status, priority, assignee } = value;
 
   try {
     const issue = await Issue.findByPk(id);
@@ -279,7 +291,7 @@ Issues.update = async (ctx) => {
       return respond.notFound(ctx);
     }
 
-    // Check duplicate issue if title or description changed
+    // Prevent duplicate issues with same title and description
     if ((title && title !== issue.title) || (description && description !== issue.description)) {
       const existingIssue = await Issue.findOne({
         where: {
@@ -288,28 +300,29 @@ Issues.update = async (ctx) => {
           id: { [Op.ne]: id }
         }
       });
+
       if (existingIssue) {
         return respond.conflict(ctx, 'Another issue with the same title and description exists');
       }
     }
 
-    // Validate assignee existence if provided
-    // Allow null or empty string to unassign assignee
+    // Assignee logic
     if (typeof assignee !== 'undefined') {
       if (assignee === null || assignee === '') {
         issue.assignee = null;
       } else {
-        const assigneeExists = await User.findByPk(assignee);
+        const assigneeId = parseInt(assignee, 10);
+        const assigneeExists = await User.findByPk(assigneeId);
         if (!assigneeExists) {
-          return respond.badRequest(ctx, [`Assignee with ID ${assignee} does not exist`]);
+          return respond.badRequest(ctx, [`Assignee with ID ${assigneeId} does not exist`]);
         }
-        issue.assignee = assignee;
+        issue.assignee = assigneeId;
       }
     }
 
-    // Update fields
+    // Update other fields
     if (title) issue.title = title;
-    if (description) issue.description = description;
+    if (description !== undefined) issue.description = description;
     if (status) issue.status = status;
     if (priority) issue.priority = priority;
 
@@ -317,11 +330,9 @@ Issues.update = async (ctx) => {
 
     await issue.save();
 
-    const newIssueRaw = issue.toJSON();
-
-    // Prepare objects for revision, excluding id and timestamps
+    const updatedIssueRaw = issue.toJSON();
     const oldIssue = filterKeys(issue.toJSON());
-    const newIssue = filterKeys(newIssueRaw);
+    const newIssue = filterKeys(updatedIssueRaw);
     const changes = getChanges(oldIssue, newIssue);
 
     const revisionCount = await Revision.count({ where: { issueId: issue.id } });
@@ -335,7 +346,7 @@ Issues.update = async (ctx) => {
       updatedAt: issue.updatedAt || new Date()
     });
 
-    respond.success(ctx, newIssueRaw);
+    respond.success(ctx, updatedIssueRaw);
   } catch (err) {
     console.error('Error updating issue:', err);
     respond.internalError(ctx);

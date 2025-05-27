@@ -6,6 +6,8 @@ module.exports = {
 
     port: process.env.NODE_LOCAL_PORT || 8080,
 
+    apiDocUrl: process.env.API_DOC_URL || 'http://localhost:5555',
+
     mysql: {
         host: process.env.DB_HOST,
         user: process.env.DB_USER,

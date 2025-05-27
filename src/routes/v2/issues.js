@@ -7,7 +7,7 @@ const router = new Router();
 router.get('/', IssuesController.list);
 router.get('/:id', IssuesController.get);
 router.post('/', IssuesController.create);
-router.put('/:id', IssuesController.update);
+router.patch('/:id', IssuesController.patch);
 // router.delete('/:id', IssuesController.delete);
 
 // Issue revisions endpoints

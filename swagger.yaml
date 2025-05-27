@@ -444,7 +444,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-    put:
+    patch:
       tags:
         - Issues
         - Task 3
