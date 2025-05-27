@@ -1,3 +1,4 @@
+
 'use strict';
 
 const { DataTypes } = require('sequelize');
@@ -11,20 +12,20 @@ const Issue = sequelize.define('Issue', {
     autoIncrement: true
   },
   title: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(255),
     allowNull: false
   },
   description: {
     type: DataTypes.TEXT,
-    allowNull: true
+    allowNull: false
   },
   status: {
-    type: DataTypes.STRING(50),
+    type: DataTypes.ENUM('open', 'in_progress', 'resolved', 'closed'),
     allowNull: false,
     defaultValue: 'open'
   },
   priority: {
-    type: DataTypes.STRING(50),
+    type: DataTypes.ENUM('low', 'medium', 'high', 'critical', 'urgent'),
     allowNull: false,
     defaultValue: 'medium'
   },
@@ -50,7 +51,6 @@ const Issue = sequelize.define('Issue', {
   updatedAt: 'updated_at'
 });
 
-// Associations
 Issue.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
 Issue.belongsTo(User, { foreignKey: 'updatedBy', as: 'updater' });
 Issue.belongsTo(User, { foreignKey: 'assignee', as: 'assignedUser' });

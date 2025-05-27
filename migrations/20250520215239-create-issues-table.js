@@ -1,3 +1,4 @@
+
 'use strict';
 
 module.exports = {
@@ -18,12 +19,12 @@ module.exports = {
                 allowNull: true
             },
             status: {
-                type: Sequelize.STRING(100),
+                type: Sequelize.ENUM('open', 'in_progress', 'resolved', 'closed'),
                 allowNull: false,
                 defaultValue: 'open'
             },
             priority: {
-                type: Sequelize.STRING(100),
+                type: Sequelize.ENUM('low', 'medium', 'high', 'critical', 'urgent'),
                 allowNull: false,
                 defaultValue: 'medium'
             },
@@ -72,7 +73,7 @@ module.exports = {
         });
     },
 
-    down: async (queryInterface, Sequelize) => {
+    down: async (queryInterface) => {
         await queryInterface.dropTable('issues');
     }
 };

@@ -6,6 +6,20 @@ const User = require('../../models/user');
 const Issue = require('../../models/issue');
 const Revision = require('../../models/revision');
 const _ = require('lodash');
+const Joi = require('joi');
+
+// Allowed enums
+const allowedStatuses = ['open', 'in_progress', 'resolved', 'closed'];
+const allowedPriorities = ['low', 'medium', 'high', 'critical', 'urgent'];
+
+// Validation schema
+const issueSchema = Joi.object({
+  title: Joi.string().max(255).required(),
+  description: Joi.string().required(),
+  status: Joi.string().valid(...allowedStatuses).default('open'),
+  priority: Joi.string().valid(...allowedPriorities).default('medium'),
+  assignee: Joi.number().integer().positive().allow(null)
+});
 
 // const baseUrl = 'http://localhost:8080'; // Commented as unused variable, good to avoid hard coded values
 
@@ -156,20 +170,24 @@ Issues.get = async (context) => {
 // Create an issue
 // POST /issues
 Issues.create = async (ctx) => {
-  const { title, description, status = 'open', priority = 'medium', assignee = null } = ctx.request.body;
-
-  if (!title || !description) {
-    return respond.badRequest(ctx, ['Title and description are required']);
-  }
-
   const userId = ctx.state.user?.id;
 
   if (!userId) {
     return respond.unauthorized(ctx, 'Authentication required');
   }
 
+  // Validate input
+  const { error, value } = issueSchema.validate(ctx.request.body, { abortEarly: false });
+
+  if (error) {
+    const messages = error.details.map((d) => d.message);
+    return respond.badRequest(ctx, messages);
+  }
+
+  const { title, description, status, priority, assignee } = value;
+
   try {
-    // Check if an issue with the same title and description exists
+    // Check for duplicate issue
     const existingIssue = await Issue.findOne({
       where: {
         title,
@@ -179,6 +197,19 @@ Issues.create = async (ctx) => {
 
     if (existingIssue) {
       return respond.conflict(ctx, 'Issue already exists');
+    }
+
+    // Treat empty string as null
+    if (assignee === '') {
+      assignee = null;
+    }
+
+    // Validate assignee (if provided and not null)
+    if (assignee !== null) {
+      const userExists = await User.findByPk(assignee);
+      if (!userExists) {
+        return respond.badRequest(ctx, [`Assignee with ID ${assignee} does not exist`]);
+      }
     }
 
     const issue = await Issue.create({
@@ -191,8 +222,7 @@ Issues.create = async (ctx) => {
       updatedBy: userId
     });
 
-    // Reload to ensure timestamps are populated
-    await issue.reload();
+    await issue.reload(); // Ensure timestamps are updated
 
     const revisionData = {
       // id: issue.id,
@@ -264,8 +294,9 @@ Issues.update = async (ctx) => {
     }
 
     // Validate assignee existence if provided
+    // Allow null or empty string to unassign assignee
     if (typeof assignee !== 'undefined') {
-      if (assignee === null) {
+      if (assignee === null || assignee === '') {
         issue.assignee = null;
       } else {
         const assigneeExists = await User.findByPk(assignee);
