@@ -73,9 +73,6 @@ servers:
       port:
         default: '8080'
 
-security:
-  - BearerAuth: []
-  - X-Client-ID: []
 
 tags:
   - name: System
@@ -169,26 +166,51 @@ paths:
       tags:
         - System
       operationId: getHealthCheck
-      parameters:
-        - in: header
-          name: X-Client-Id
-          required: true
-          schema:
-            type: string
-          description: Unique client ID for validating access.
       responses:
         '200':
           description: Server is healthy
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthResponse'
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          message:
+                            type: string
+                            example: OK
+                          version:
+                            type: string
+                            example: "1.0.0"
+              example:
+                success: true
+                message: "Request succeeded"
+                data:
+                  message: "OK"
+                  version: "1.0.0"
+                errors: null
+
         '400':
           $ref: '#/components/responses/MissingClientIdHeader'
+
         '403':
           $ref: '#/components/responses/InvalidClientId'
+
         '503':
-          description: Service unavailable. The server is not healthy or under maintenance.
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Service Unavailable"
+                errors:
+                  - message: "The server is temporarily unable to handle the request"
+                status: 503
 
   # /health:
   #   get:
@@ -266,6 +288,7 @@ paths:
       operationId: createIssue
       security:
         - BearerAuth: []
+        - ClientIdAuth: []
       requestBody:
         required: true
         content:
@@ -286,11 +309,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/IssueResponse'
         '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/components/responses/InvalidOrExpiredToken'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/InvalidClientId'
+          $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -362,6 +385,7 @@ paths:
           description: Text search within title and description
       security:
         - BearerAuth: []
+        - ClientIdAuth: []
       responses:
         '200':
           description: List of issues with pagination
@@ -375,6 +399,12 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Issue not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -392,10 +422,6 @@ paths:
           schema:
             type: string
       responses:
-        '400':
-          $ref: '#/components/responses/MissingClientIdHeader'
-        '403':
-          $ref: '#/components/responses/InvalidClientId'
         '200':
           description: Issue found
           content:
@@ -407,8 +433,16 @@ paths:
                     properties:
                       data:
                         $ref: '#/components/schemas/Issue'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Issue not found
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     put:
       tags:
@@ -426,6 +460,7 @@ paths:
           description: Unique identifier for the issue to update.
       security:
         - BearerAuth: []
+        - ClientIdAuth: []
       requestBody:
         required: true
         content:
@@ -453,6 +488,7 @@ paths:
           $ref: '#/components/responses/UnprocessableEntity'
         '500':
           $ref: '#/components/responses/InternalServerError'
+          
 
   /issues/{id}/revisions:
     get:
@@ -468,6 +504,9 @@ paths:
           description: Unique ID of the issue
           schema:
             type: integer
+      security:
+        - BearerAuth: []
+        - ClientIdAuth: []
       responses:
         '200':
           description: Successfully retrieved revision history
@@ -475,12 +514,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetIssueRevisionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           description: Issue not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
 
   /issues/{id}/revisions/compare:
@@ -517,6 +564,9 @@ paths:
             type: string
             enum: [asc, desc]
             default: asc
+      security:
+        - BearerAuth: []
+        - ClientIdAuth: []
       responses:
         '200':
           description: Successfully compared revisions
@@ -524,12 +574,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CompareRevisionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Issue or revisions not found
+          description: Issue not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+security:
+  - BearerAuth: []
+  - ClientIdAuth: []
 
 components:
   securitySchemes:
@@ -537,10 +600,10 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    X-Client-ID:
+    ClientIdAuth:
       type: apiKey
       in: header
-      name: X-Client-ID
+      name: x-client-id
 
   responses:
     Success:
@@ -692,7 +755,7 @@ components:
             title: "Invalid X-Client-ID"
             status: 403
             detail: "Invalid X-Client-ID"
-            instance: "/api/v1/issues/1"
+            instance: "/health"
             errors: null
             success: false
 
@@ -757,6 +820,7 @@ components:
           type: string
           example: UP
           description: Indicates API server health
+
     HealthResponse:
       allOf:
         - $ref: '#/components/schemas/BaseResponse'

@@ -1233,13 +1233,59 @@
 		},
 		{
 			"name": "Task 5.1: X-Client-ID Access Control (Missing header)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Type</th>",
+							"        <th>Title</th>",
+							"        <th>Status</th>",
+							"        <th>Detail</th>",
+							"        <th>Instance</th>",
+							"        <th>Errors</th>",
+							"        <th>Success</th>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>{{response.type}}</td>",
+							"        <td>{{response.title}}</td>",
+							"        <td>{{response.status}}</td>",
+							"        <td>{{response.detail}}</td>",
+							"        <td>{{response.instance}}</td>",
+							"        <td>{{response.errors}}</td>",
+							"        <td>{{response.success}}</td>",
+							"    </tr>",
+							"</table>",
+							"`;",
+							"",
+							"function constructVisualizerPayload() {",
+							"    return { response: pm.response.json() }",
+							"}",
+							"",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [
 					{
 						"key": "X-Client-ID",
-						"value": "{{client_id}}",
-						"disabled": true
+						"value": "{{client_id}}"
 					}
 				],
 				"url": {
@@ -2446,7 +2492,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODI0MDg5OCwiZXhwIjoxNzQ4MjUxNjk4fQ.J8rB0v-Eo5fMT5hUaVpmXYhZXGMzxt_GoKrww6CG7Pw",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc0ODI5NDEzNSwiZXhwIjoxNzQ4MzA0OTM1fQ.2h-EJzQ49CObwP6kFaBHGgPCvN_cb-LiuhZL9N9l-kw",
 				"type": "string"
 			}
 		]
