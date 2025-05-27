@@ -13,16 +13,18 @@ const apiRouter = require('./src/routes');
 
 const app = new Koa();
 
-// Enable CORS
-// app.use(cors());
-// Apply CORS with custom config
-app.use(cors({
-  origin: config.apiDocUrl, // Swagger UI origin
-  allowHeaders: ['Content-Type', 'Authorization', 'X-Client-ID'], // Allow custom headers
+// Enable CORS for API documentation
+const corsOptions = {
+  origin: config.apiDocUrl,
+  allowHeaders: ['Content-Type', 'Authorization', 'X-Client-ID'],
   exposeHeaders: ['X-Client-ID'],
   credentials: true,
   allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-}));
+};
+
+if (process.env.NODE_ENV !== 'production') {
+  app.use(cors(corsOptions));
+}
 
 
 // Middleware setup
