@@ -263,13 +263,24 @@ Issues.update = async (ctx) => {
       }
     }
 
-    const oldIssueRaw = issue.toJSON();
+    // Validate assignee existence if provided
+    if (typeof assignee !== 'undefined') {
+      if (assignee === null) {
+        issue.assignee = null;
+      } else {
+        const assigneeExists = await User.findByPk(assignee);
+        if (!assigneeExists) {
+          return respond.badRequest(ctx, [`Assignee with ID ${assignee} does not exist`]);
+        }
+        issue.assignee = assignee;
+      }
+    }
 
+    // Update fields
     if (title) issue.title = title;
     if (description) issue.description = description;
     if (status) issue.status = status;
     if (priority) issue.priority = priority;
-    if (typeof assignee !== 'undefined') issue.assignee = assignee;
 
     issue.updatedBy = userId;
 
@@ -278,9 +289,8 @@ Issues.update = async (ctx) => {
     const newIssueRaw = issue.toJSON();
 
     // Prepare objects for revision, excluding id and timestamps
-    const oldIssue = filterKeys(oldIssueRaw);
+    const oldIssue = filterKeys(issue.toJSON());
     const newIssue = filterKeys(newIssueRaw);
-
     const changes = getChanges(oldIssue, newIssue);
 
     const revisionCount = await Revision.count({ where: { issueId: issue.id } });
