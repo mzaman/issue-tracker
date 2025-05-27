@@ -11,20 +11,11 @@ info:
     ## Versioning and Prefix
     - You can switch between versions using the path parameters like `/v1`, `/v2`, or omit when not needed.
     - Prefix can also be changed dynamically depending on environment setup.
-    - For example, `/api/v1` or `/api/v2` or `/v1` or `/v2` depending on the setup. And all APIs are accessible in all combinations of:
-      - No prefix (/)
-      - Version only (/v1, /v2, etc.)
-      - API prefix only (/api)
-      - API prefix + version (/api/v1, /api/v2, etc.)
+    - For example, `/api/v1` or `/api/v2` or `/v1` or `/v2` depending on the setup. And all APIs are accessible in all combinations of: 
+      - `No prefix (/)` `Version only (/v1, /v2, etc.)` `API prefix only (/api)` `API prefix + version (/api/v1, /api/v2, etc.)`
 
     - When version grows (v1, v2, and so on), as a future-proof solution, this setup allows:
-      -	/health
-      -	/api/health
-      -	/v1/health
-      -	/v2/health
-      -	/api/v1/health
-      -	/api/v2/health
-      - etc...
+      -	`/health` `/api/health` `/v1/health` `/v2/health` `/api/v1/health` `/api/v2/health` etc...
       
     * All endpoints require `X-Client-ID` (Value: `my-client-id-123`).  
     * Some endpoints require Bearer Token from login response.
@@ -257,6 +248,12 @@ paths:
         - Auth
         - Task 5
       summary: "User login and token generation"
+      description: |
+        After successful login, copy the `accessToken` from the response and paste it into the **Authorize Bearer Token** field (top-right corner) to access protected APIs.
+        **Email pattern:** `user-<number>@example.com`  
+        _(e.g., user-1@example.com, user-2@example.com, ..., user-99@example.com)_  
+        **Common test password:** `Password123`
+        **Total test users:** 99
       operationId: loginUser
       requestBody:
         required: true
@@ -326,63 +323,76 @@ paths:
         Retrieve a paginated list of issues filtered by status, priority, and searchable by title/description. Results are sortable and support client authentication.
       operationId: getAllIssues
       parameters:
-        - name: page
-          in: query
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-          description: Page number for pagination
-        - name: pageSize
-          in: query
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-          description: Number of items per page
-        - name: status
-          in: query
-          required: false
-          style: form
-          explode: false
-          schema:
-            type: array
-            items:
-              type: string
-              enum: [open, in_progress, resolved, closed]
-          description: Filter by one or more issue statuses
-        - name: priority
-          in: query
-          required: false
-          style: form
-          explode: false
-          schema:
-            type: array
-            items:
-              type: string
-              enum: [low, medium, high, critical]
-          description: Filter by one or more issue priorities
-        - name: sortBy
-          in: query
-          required: false
-          schema:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: Page number for pagination
+
+      - name: pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 5
+        description: Number of items per page
+
+      - name: status
+        in: query
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
             type: string
-            enum: [priority, created_at, updated_at, status]
-          description: Field to sort the issues by
-        - name: sortOrder
-          in: query
-          required: false
-          schema:
+            enum: [open, in_progress, resolved, closed]
+          default: [open, in_progress, resolved]
+        description: Filter by one or more issue statuses
+
+      - name: priority
+        in: query
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
             type: string
-            enum: [asc, desc]
-          description: Sort order for results
-        - name: search
-          in: query
-          required: false
-          schema:
-            type: string
-          description: Text search within title and description
+            enum: [low, medium, high, critical]
+          default: [medium, high, critical]
+        description: Filter by one or more issue priorities
+
+      - name: sortBy
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [id, priority, created_at, updated_at, status]
+          default: id
+        description: Field to sort the issues by
+
+      - name: sortOrder
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [asc, desc]
+          default: desc
+        description: Sort order for results
+
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+          default: ""
+        description: Text search within title and description
       security:
         - BearerAuth: []
         - ClientIdAuth: []
@@ -420,7 +430,9 @@ paths:
           name: id
           required: true
           schema:
-            type: string
+            type: integer
+            minimum: 1
+            default: 1
       responses:
         '200':
           description: Issue found
@@ -456,7 +468,9 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            minimum: 1
+            default: 1
           description: Unique identifier for the issue to update.
       security:
         - BearerAuth: []
@@ -468,11 +482,11 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateIssueRequest'
             example:
-              title: "UI bug in dashboard"
-              description: "Fix the alignment in header"
+              title: "Bug in issue-service"
+              description: "It does not generate revisions"
               status: "in_progress"
               priority: "high"
-              assignee: "123"
+              assignee: "12"
       responses:
         '200':
           $ref: '#/components/responses/Success'
@@ -504,6 +518,8 @@ paths:
           description: Unique ID of the issue
           schema:
             type: integer
+            minimum: 1
+            default: 1
       security:
         - BearerAuth: []
         - ClientIdAuth: []
@@ -541,29 +557,49 @@ paths:
         - name: id
           in: path
           required: true
-          description: Unique ID of the issue
+          description: >
+            Unique numeric ID of the issue.
+            Use a valid issue ID, e.g., 1.
           schema:
             type: integer
+            minimum: 1
+            default: 1
+            example: 1
+
         - name: from
           in: query
           required: true
-          description: Starting revision number for comparison
+          description: >
+            Starting revision number for comparison.
+            Must be greater than or equal to 1.
           schema:
             type: integer
+            minimum: 1
+            default: 1
+            example: 1
+
         - name: to
           in: query
           required: true
-          description: Ending revision number for comparison
+          description: >
+            Ending revision number for comparison.
+            Must be greater than or equal to `from`.
           schema:
             type: integer
+            minimum: 1
+            default: 7
+            example: 7
+
         - name: order
           in: query
           required: false
-          description: Order of revisions (asc or desc)
+          description: >
+            Sort order of the revisions. Use `asc` for oldest to newest, or `desc` for newest to oldest.
           schema:
             type: string
             enum: [asc, desc]
             default: asc
+            example: asc
       security:
         - BearerAuth: []
         - ClientIdAuth: []
@@ -1015,11 +1051,14 @@ components:
         email:
           type: string
           format: email
-          example: admin@example.com
+          example: user-1@example.com
+          description: >
+            Email pattern: user-<number>@example.com (e.g., user-1@example.com, user-2@example.com)
         password:
           type: string
           format: password
           example: Password123
+          description: Common test password - Password123
 
     LoginResponse:
       allOf:
@@ -1052,9 +1091,9 @@ components:
         priority:
           $ref: '#/components/schemas/IssuePriorityEnum'
         assignee:
-          type: string
+          type: integer
           nullable: true
-          example: "123"
+          example: "12"
 
     UpdateIssueRequest:
       type: object
