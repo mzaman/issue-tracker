@@ -4,7 +4,8 @@ set -e
 ENV_FILE="test"
 
 source ./cmd/env $ENV_FILE
-./cmd/install $ENV_FILE
+./cmd/rebuild $ENV_FILE
+./cmd/reinstall $ENV_FILE
 
 # Get the command (all arguments after the container name)
 COMMAND="${@:1}"
@@ -29,8 +30,9 @@ echo "$(timestamp) - Starting the app test container"
 # If a command is provided, execute it with bash -c
 echo "$(timestamp) - Running command in the app container: npm run $COMMAND"
 docker-compose -f docker-compose.$ENV_FILE.yml exec app bash -c "npm run $COMMAND" 2>&1 | while IFS= read -r line; do
-    # echo "$(timestamp) - $line"
-done | tee -a "test"_output.log  # Append the log output to the existing log file
+    # echo $line
+    echo "$(timestamp) - $line"
+done | tee -a test_output.log  # Append the log output to the existing log file
 
 
 # Check if the command was successful

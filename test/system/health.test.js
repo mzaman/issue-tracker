@@ -1,6 +1,6 @@
 
-const { buildEndpoints } = require('./utils');
-const { xClientIdTest } = require('./utils/commonTests');
+const { buildEndpoints } = require('../utils/index');
+const { xClientIdTest } = require('../utils/commonTests');
 
 describe('Health Endpoints', () => {
     const endpoints = buildEndpoints('/health');

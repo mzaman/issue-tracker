@@ -1,8 +1,8 @@
 # Project Submission Document
 
-## Overview
+## Project Overview
 
-This Trial Day assignment was designed to be completed in 4–6 hours but allocated 7 days. I invested 8 days (with around 4 days of effective effort) to go beyond expectations by implementing robust architecture, automation, and realistic data flows. Every single task and bonus point (except TS conversion) is covered.
+This repository contains a robust Issue Tracking RESTful API backend built using Node.js and Koa framework, backed by a MySQL database managed through Sequelize ORM. The entire system is containerized using Docker and designed for seamless environment management, including development, testing, and production setups.
 
 ---
 
