@@ -1,47 +1,46 @@
 // test/setup.js
+
+const { app, server } = require('../index.js');
 const sequelize = require('../src/models/connection');
 const request = require('supertest');
-const { app } = require('../index.js');
-
-// Extend Jest expect with additional matchers from jest-extended
 require('jest-extended');
 
-// Set environment variable for test environment
+const ApiBuilder = require('./utils/apiBuilder');
+
 process.env.NODE_ENV = 'test';
-const validClientId = process.env.VALID_CLIENT_ID || 'test-client-id';
 
-// Create a wrapped supertest instance that includes X-Client-ID for all HTTP methods
-const baseRequest = request(app.listen());
+const DEFAULT_CLIENT_ID = process.env.VALID_CLIENT_ID || 'my-client-id-123';
 
-global.testContext = {
-    request: {
-        get: (url) => baseRequest.get(url).set('X-Client-ID', validClientId),
-        post: (url) => baseRequest.post(url).set('X-Client-ID', validClientId),
-        put: (url) => baseRequest.put(url).set('X-Client-ID', validClientId),
-        patch: (url) => baseRequest.patch(url).set('X-Client-ID', validClientId),
-        delete: (url) => baseRequest.delete(url).set('X-Client-ID', validClientId),
-    },
-};
-
-let server;
 beforeAll(async () => {
-    // Recreate DB schema
     await sequelize.sync({ force: true });
 
-    // Start server on random port
-    const server = app.listen();
+    if (!server || !server.listening) {
+        global.server = app.listen();
+    } else {
+        global.server = server;
+    }
 
-    // Store server and Supertest instance globally
-    global.testContext.request = request(server);
-    global.testContext.server = server;
+    const raw = request(global.server);
+
+    global.rawApi = raw;
+
+    global.api = new ApiBuilder(raw, {
+        'X-Client-ID': DEFAULT_CLIENT_ID,
+    });
+
+    global.apiWithToken = (token) =>
+        new ApiBuilder(raw, {
+            'X-Client-ID': DEFAULT_CLIENT_ID,
+            Authorization: `Bearer ${token}`,
+        });
 });
 
 afterAll(async () => {
-    // Close the DB connection and server after all tests complete
     await sequelize.close();
-    if (server) server.close();
-});
 
-// module.exports = {
-//     request: () => request(server), // Helper to use in your tests
-// };
+    if (global.server && global.server.close) {
+        await new Promise((resolve, reject) =>
+            global.server.close((err) => (err ? reject(err) : resolve()))
+        );
+    }
+});
