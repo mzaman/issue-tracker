@@ -1,36 +1,51 @@
-const { faker } = require('./utils');
+'use strict';
+
+const bcrypt = require('bcrypt');
+const User = require('../src/models/user');
+const { faker, buildEndpoints } = require('./utils');
 
 describe('Auth API Tests', () => {
-  const clientIDHeader = { 'X-Client-ID': 'my-client-id-123' };
+  const loginPayload = { email: 'user-1@example.com', password: 'Password123' };
+  const endpoints = buildEndpoints('auth/login'); // Builds all route variants
 
-  test.each(['v1', 'v2'])('Successful login for API version %s', async (version) => {
-    const res = await global.testContext.request
-      .post(`/api/${version}/auth/login`)
-      .set(clientIDHeader)
-      .send({ email: 'admin@example.com', password: 'Password123' });
+  beforeEach(async () => {
+    await User.destroy({ where: { email: loginPayload.email } });
 
-    expect(res.statusCode).toBe(200);
+    const passwordHash = await bcrypt.hash(loginPayload.password, 10);
+    await User.create({
+      email: loginPayload.email,
+      name: 'User One',
+      passwordHash,
+    });
+  });
+
+  test.each(endpoints)('Successful login → %s', async (url) => {
+    const res = await api
+      .sendJson(loginPayload)
+      .expectStatus(200)
+      .post(url);
+
     expect(res.body).toHaveProperty('data.token');
-    expect(res.body.data.token).toBeString();
+    expect(res.body.data.token).toEqual(expect.any(String));
   });
 
-  test.each(['v1', 'v2'])('Login fails with invalid credentials for %s', async (version) => {
-    const res = await global.testContext.request
-      .post(`/api/${version}/auth/login`)
-      .set(clientIDHeader)
-      .send({ email: 'admin@example.com', password: faker.internet.password() });
+  test.each(endpoints)('Invalid credentials → %s', async (url) => {
+    const res = await api
+      .sendJson({ email: loginPayload.email, password: faker.internet.password() })
+      .expectStatus(401)
+      .post(url);
 
-    expect(res.statusCode).toBe(401);
     expect(res.body).toHaveProperty('title');
+    expect(res.body.title).toEqual('Invalid email or password');
   });
 
-  test.each(['v1', 'v2'])('Login fails with missing fields for %s', async (version) => {
-    const res = await global.testContext.request
-      .post(`/api/${version}/auth/login`)
-      .set(clientIDHeader)
-      .send({});
+  test.each(endpoints)('Missing fields → %s', async (url) => {
+    const res = await api
+      .sendJson({})
+      .expectStatus(400)
+      .post(url);
 
-    expect(res.statusCode).toBe(400);
     expect(res.body).toHaveProperty('title');
+    expect(res.body.title).toEqual('Email and password are required');
   });
 });
