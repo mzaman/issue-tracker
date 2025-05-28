@@ -3,3 +3,5 @@ node_modules
 /.env
 /docker-compose.yml
 coverage
+/test_output.log
+*.DS_Store
