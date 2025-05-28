@@ -1,4 +1,8 @@
 const { faker } = require('@faker-js/faker');
+const bcrypt = require('bcrypt');
+const User = require('../../src/models/user');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 /**
  * Normalizes a URL path by replacing multiple consecutive slashes (//) with a single slash (/).
@@ -61,6 +65,31 @@ const loginUser = async (version = 'v1', email = 'admin@example.com', password =
     return res.body.token;
 };
 
+const createUserAndLogin = async () => {
+    const payload = {
+        email: faker.internet.email(),
+        password: 'Password123',
+    };
+
+    const endpoint = 'api/v1/auth/login';
+
+    const passwordHash = await bcrypt.hash(payload.password, 10);
+
+    await User.findOrCreate({
+        where: { email: payload.email },
+        defaults: {
+            name: faker.person.fullName(),
+            passwordHash,
+        },
+    });
+
+    const res = await global.api
+        .sendJson(payload)
+        .post(endpoint);
+
+    // console.log('Login response body:', res.body);
+    return res.body.data.token;
+};
 
 /**
  * Returns Authorization header object for given token
@@ -88,4 +117,5 @@ module.exports = {
     getAuthHeader,
     faker,
     generateFakeIssueData,
+    createUserAndLogin,
 };
