@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+source ./cmd/env ${1:-dev}
+
+DOCKER_YML=docker-compose.$ENV_FILE.yml
+
+docker-compose -f $DOCKER_YML build --no-cache
+docker-compose -f $DOCKER_YML up -d
+
+docker-compose -f $DOCKER_YML exec -T app npm ci
+# docker-compose -f $DOCKER_YML exec -T app npm run migrate
+# ./cmd/install ${1:-dev}

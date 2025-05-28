@@ -291,6 +291,9 @@ Issues.patch = async (ctx) => {
       return respond.notFound(ctx);
     }
 
+    // Capture old state BEFORE updates
+    const oldIssue = filterKeys(issue.toJSON());
+
     // Prevent duplicate issues with same title and description
     if ((title && title !== issue.title) || (description && description !== issue.description)) {
       const existingIssue = await Issue.findOne({
@@ -306,7 +309,7 @@ Issues.patch = async (ctx) => {
       }
     }
 
-    // Assignee logic
+    // Handle assignee logic
     if (typeof assignee !== 'undefined') {
       if (assignee === null || assignee === '') {
         issue.assignee = null;
@@ -320,7 +323,7 @@ Issues.patch = async (ctx) => {
       }
     }
 
-    // Update other fields
+    // Update fields
     if (title) issue.title = title;
     if (description !== undefined) issue.description = description;
     if (status) issue.status = status;
@@ -330,10 +333,12 @@ Issues.patch = async (ctx) => {
 
     await issue.save();
 
+    // Get updated state AFTER save
     const updatedIssueRaw = issue.toJSON();
-    const oldIssue = filterKeys(issue.toJSON());
     const newIssue = filterKeys(updatedIssueRaw);
-    const changes = getChanges(oldIssue, newIssue);
+
+    // Compute changes (you can also use deepDiff if needed)
+    const changes = deepDiff(oldIssue, newIssue);
 
     const revisionCount = await Revision.count({ where: { issueId: issue.id } });
 
