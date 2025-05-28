@@ -10,21 +10,21 @@ const INVALID_CLIENT_ID = 'invalid-client-id-456';
  */
 const xClientIdTest = (path, method = 'post', payload = {}) => {
     describe(`X-Client-ID header tests for [${method.toUpperCase()}] ${path}`, () => {
-        test('should return 400 if X-Client-ID is missing', async () => {
+        test('Should return 400 if X-Client-ID is missing', async () => {
             const res = await global.rawApi[method](path).send(payload);
             expect(res.statusCode).toBe(400);
             expect(res.body).toHaveProperty('title');
             expect(res.body.title).toMatch(/missing x-client-id/i);
         });
 
-        test('should return 401 or 403 with invalid X-Client-ID', async () => {
+        test('Should return 401 or 403 with invalid X-Client-ID', async () => {
             const res = await global.rawApi[method](path)
                 .set('X-Client-ID', INVALID_CLIENT_ID)
                 .send(payload);
             expect([401, 403, 400]).toContain(res.statusCode); // allow 400 just in case your API returns it
         });
 
-        test('should pass with valid X-Client-ID', async () => {
+        test('Should pass with valid X-Client-ID', async () => {
             const res = await global.rawApi[method](path)
                 .set('X-Client-ID', DEFAULT_CLIENT_ID)
                 .send(payload);

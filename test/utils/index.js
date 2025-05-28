@@ -1,6 +1,15 @@
 const { faker } = require('@faker-js/faker');
 
 /**
+ * Normalizes a URL path by replacing multiple consecutive slashes (//) with a single slash (/).
+ * Example: '/api//v1//health' becomes '/api/v1/health'
+ *
+ * @param {string} path - The raw endpoint path that may include double slashes
+ * @returns {string} - A cleaned version of the endpoint path
+ */
+const normalizeEndpoint = (path) => path.replace(/\/{2,}/g, '/');
+
+/**
  * Build all valid route variants combining prefixes and versions
  *
  * @param {string} endpoint - The route path (e.g. 'auth/login')
@@ -8,19 +17,26 @@ const { faker } = require('@faker-js/faker');
  * @param {string[]} [versions=['v1', 'v2']] - Versions (e.g. '', 'v1', 'v2')
  * @returns {string[]} Array of endpoint variants (e.g. ['/auth/login', '/api/v1/auth/login', ...])
  */
-const buildEndpoints = (endpoint, prefixes = ['', 'api'], versions = ['v1', 'v2']) => {
-    const variants = [];
+const buildEndpoints = (
+    endpoint,
+    prefixes = ['', 'api'],
+    versions = ['v1', 'v2']
+) => {
+    // Helper: normalize paths by replacing multiple slashes with single slash
+    const normalize = (path) => path.replace(/\/{2,}/g, '/');
 
-    for (const prefix of prefixes) {
-        for (const version of ['', ...versions]) {
-            const parts = [prefix, version, endpoint].filter(Boolean);
-            const path = '/' + parts.join('/');
-            variants.push(path);
-        }
-    }
-
-    return [...new Set(variants)];
-}
+    // Generate all combinations of prefix/version/endpoint
+    return prefixes.flatMap((prefix) =>
+        versions.map((version) =>
+            // Build path parts array, skip empty strings to avoid extra slashes
+            normalize(
+                ['/', prefix, version, endpoint]
+                    .filter(Boolean) // remove empty strings
+                    .join('/')
+            )
+        )
+    );
+};
 
 /**
  * Logs in user and returns JWT token
@@ -66,6 +82,7 @@ const generateFakeIssueData = () => ({
 });
 
 module.exports = {
+    normalizeEndpoint,
     buildEndpoints,
     loginUser,
     getAuthHeader,

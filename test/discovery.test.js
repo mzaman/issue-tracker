@@ -1,8 +1,12 @@
-// test/discovery.test.js
+
+const { buildEndpoints } = require('./utils');
+const { xClientIdTest } = require('./utils/commonTests');
 
 describe('Discovery Endpoints', () => {
-    test('GET / returns 200 and discovery info', async () => {
-        const res = await global.testContext.request.get('/');
+    const endpoints = buildEndpoints('/');
+
+    test.each(endpoints)('GET %s returns 200 and discovery info', async (endpoint) => {
+        const res = await global.api.get(endpoint);
 
         expect(res.statusCode).toBe(200);
         expect(res.body).toMatchObject({
@@ -12,5 +16,10 @@ describe('Discovery Endpoints', () => {
             },
             errors: null,
         });
+    });
+
+    // Apply X-Client-ID tests to all endpoints
+    endpoints.forEach((endpoint) => {
+        xClientIdTest(endpoint, 'get');
     });
 });

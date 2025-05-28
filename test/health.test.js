@@ -1,8 +1,12 @@
-// test/health.test.js
+
+const { buildEndpoints } = require('./utils');
+const { xClientIdTest } = require('./utils/commonTests');
 
 describe('Health Endpoints', () => {
-    test('GET /health returns 200 and status', async () => {
-        const res = await global.testContext.request.get('/health');
+    const endpoints = buildEndpoints('/health');
+
+    test.each(endpoints)('GET %s returns 200 and status', async (endpoint) => {
+        const res = await global.api.get(endpoint);
 
         expect(res.statusCode).toBe(200);
         expect(res.body).toMatchObject({
@@ -14,5 +18,9 @@ describe('Health Endpoints', () => {
             },
             errors: null,
         });
+    });
+
+    endpoints.forEach((endpoint) => {
+        xClientIdTest(endpoint, 'get');
     });
 });
