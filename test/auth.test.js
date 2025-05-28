@@ -3,6 +3,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../src/models/user');
 const { faker, buildEndpoints } = require('./utils');
+const { xClientIdTest } = require('./utils/commonTests');
 
 describe('Auth API Tests', () => {
   const loginPayload = { email: 'user-1@example.com', password: 'Password123' };
@@ -17,6 +18,11 @@ describe('Auth API Tests', () => {
       name: 'User One',
       passwordHash,
     });
+  });
+
+  // Inject common header tests for each endpoint
+  endpoints.forEach((endpoint) => {
+    xClientIdTest(endpoint, 'post', loginPayload);
   });
 
   test.each(endpoints)('Successful login → %s', async (url) => {
