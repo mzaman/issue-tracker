@@ -23,7 +23,9 @@ module.exports = {
   ],
 
   // Setup files for globals, mocks, extensions
-  setupFilesAfterEnv: ['<rootDir>/test/setup.js'],
+  globalSetup: '<rootDir>/test/globalSetup.js',
+  globalTeardown: '<rootDir>/test/globalTeardown.js',
+  setupFilesAfterEnv: ['<rootDir>/test/globalTestSetup.js'],
 
   resetMocks: true,
   restoreMocks: true,
