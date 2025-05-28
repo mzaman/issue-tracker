@@ -1,9 +1,8 @@
-// test/utils/apiBuilder.js
-
 class ApiBuilder {
-    constructor(baseRequest, defaultHeaders = {}) {
+    constructor(baseRequest, defaultHeaders = {}, basePath = '') {
         this.baseRequest = baseRequest;
         this.defaultHeaders = defaultHeaders;
+        this.basePath = basePath.replace(/\/+$/, ''); // Remove trailing slashes from basePath
         this.reset();
     }
 
@@ -48,8 +47,17 @@ class ApiBuilder {
         return this;
     }
 
+    // Normalize basePath and route to avoid double or missing slashes
+    _normalizePath(base, path) {
+        const cleanBase = base.replace(/\/+$/, ''); // remove trailing slashes
+        const cleanPath = path.replace(/^\/+/, ''); // remove leading slashes
+        return `${cleanBase}/${cleanPath}`;
+    }
+
     async _buildAndSend(method, url) {
-        let req = this.baseRequest[method](url);
+        const qualifiedUrl = this._normalizePath(this.basePath, url);
+
+        let req = this.baseRequest[method](qualifiedUrl);
 
         const combinedHeaders = { ...this.defaultHeaders, ...this.headers };
         for (const [key, value] of Object.entries(combinedHeaders)) {
