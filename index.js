@@ -45,7 +45,10 @@ if (!module.parent) {
   server = app.listen(config.port, () => {
     console.log(`Server listening on http://localhost:${config.port}/api/v1`);
   });
+} else {
+  // For tests: start the server lazily
+  server = null;
 }
 
-// Export app for testing (not server)
-module.exports = { app, server };
+// Export app for testing (not server) and for use in other modules
+module.exports = { app, server, getServer: () => server || app.listen() };

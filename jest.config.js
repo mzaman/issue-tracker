@@ -23,7 +23,7 @@ module.exports = {
   ],
 
   // Setup files for globals, mocks, extensions
-  setupFilesAfterEnv: ['./test/setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/test/setup.js'],
 
   resetMocks: true,
   restoreMocks: true,
