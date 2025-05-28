@@ -12,7 +12,8 @@ module.exports = new Sequelize(
         host: config.mysql.host,
         port: config.mysql.port,
         dialect: config.mysql.dialect,
-        logging: process.env.NODE_ENV !== 'test', // Disable SQL logs during tests
+        // logging: false,
+        logging: process.env.NODE_ENV === 'production', // Disable SQL logs during tests
         pool: {
             max: 10,
             min: 0
