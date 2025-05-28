@@ -20,7 +20,9 @@ docker-compose --version
 
 ## Quick Start Guide
 
-### 1. Checkout the Solution Branch
+### 1. Download Project and Checkout the Solution Branch
+Download URL: https://drive.google.com/drive/folders/16mz6cIVCp6lNRYRPBT2_XlgCbXHHKhqC?usp=sharing
+
 ```bash
 git checkout solution/masud-zaman
 ```
