@@ -82,7 +82,6 @@ class ApiBuilder {
         }
 
         const res = await req;
-
         this.reset();
         return res;
     }

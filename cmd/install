@@ -69,7 +69,8 @@ wait_for_mysql_ready() {
 # Main execution starts here
 check_docker
 
-docker-compose -f $DOCKER_YML up -d --build
+./cmd/build $ENV_FILE
+# docker-compose -f $DOCKER_YML up -d --build
 
 MYSQL_CONTAINER=$(docker-compose -f $DOCKER_YML ps -q mysqldb)
 APP_CONTAINER=$(docker-compose -f $DOCKER_YML ps -q app)

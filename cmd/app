@@ -3,4 +3,6 @@ set -e
 
 source ./cmd/env ${1:-dev}
 
-docker exec -it $(docker-compose -f docker-compose.$ENV_FILE.yml ps -q app) sh
+docker-compose -f docker-compose.$ENV_FILE.yml exec app bash
+
+# docker exec -it $(docker-compose -f docker-compose.$ENV_FILE.yml ps -q app) sh
