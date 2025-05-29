@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Issue Tracker API - Project Submission Document</title>
+    <style>
+        @media print {
+            body { margin: 0; font-size: 12px; }
+            .page-break { page-break-before: always; }
+            .no-print { display: none; }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .contact-info {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .contact-item strong {
+            min-width: 80px;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        
+        h4 {
+            color: #555;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid #4299e1;
+        }
+        
+        .inline-code {
+            background: #f1f5f9;
+            color: #1e293b;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .highlight-box {
+            background: #f8f9ff;
+            border: 1px solid #e1e8ff;
+            border-left: 4px solid #4f46e5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        
+        .success-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-left: 4px solid #22c55e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        
+        .warning-box {
+            background: #fffbeb;
+            border: 1px solid #fed7aa;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .info-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .info-card h4 {
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        tr:hover {
+            background: #f9fafb;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature-item {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .feature-item::before {
+            content: "✓";
+            color: #059669;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .tech-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .tech-item strong {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .quick-links {
+            background: #1f2937;
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .quick-links h3 {
+            color: #f9fafb;
+            border-left-color: #60a5fa;
+            margin-top: 0;
+        }
+        
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .link-item {
+            background: rgba(96, 165, 250, 0.1);
+            border: 1px solid #374151;
+            border-radius: 6px;
+            padding: 15px;
+            text-decoration: none;
+            color: #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .link-item:hover {
+            background: rgba(96, 165, 250, 0.2);
+            border-color: #60a5fa;
+        }
+        
+        .link-item strong {
+            display: block;
+            color: #60a5fa;
+            margin-bottom: 5px;
+        }
+        
+        .credentials {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .credentials h4 {
+            color: #92400e;
+            margin-top: 0;
+        }
+        
+        .cred-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .cred-item {
+            background: rgba(255,255,255,0.5);
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .print-button:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+        
+        ul, ol {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .folder-structure {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button no-print" onclick="window.print()">📄 Save as PDF</button>
+    
+    <div class="header">
+        <h1>Issue Tracker API</h1>
+        <div class="subtitle">REST API Implementation - Project Submission</div>
+        <div class="contact-info">
+            <div class="contact-item">
+                <strong>Submitted By:</strong> Masud Zaman
+            </div>
+            <div class="contact-item">
+                <strong>Email:</strong> masud.zmn@gmail.com
+            </div>
+            <div class="contact-item">
+                <strong>Date:</strong> May 29, 2025
+            </div>
+            <div class="contact-item">
+                <strong>Branch:</strong> solution/masud-zaman
+            </div>
+            <div class="contact-item">
+                <strong>GitHub:</strong> https://github.com/mzaman
+            </div>
+            <div class="contact-item">
+                <strong>LinkedIn:</strong> https://www.linkedin.com/in/masudzaman
+            </div>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <h3>📋 Overview</h3>
+        <p>This submission demonstrates a production-ready REST API implementation that addresses all required tasks while incorporating additional engineering practices for maintainability, testing, and operational reliability. The solution emphasizes realistic data flows, comprehensive automation, and scalable architecture patterns.</p>
+    </div>
+
+    <h2>🚀 Prerequisites</h2>
+    <p>Before starting, ensure your system has:</p>
+    <div class="feature-list">
+        <div class="feature-item"><strong>Docker & Docker Compose</strong> installed and running</div>
+        <div class="feature-item"><strong>Bash shell</strong> available (Linux/macOS/WSL2 on Windows)</div>
+        <div class="feature-item"><strong>Git</strong> for repository access</div>
+        <div class="feature-item"><strong>Minimum 4GB RAM</strong> recommended for containers</div>
+    </div>
+
+    <p><strong>Verify installation:</strong></p>
+    <div class="code-block">docker --version
+docker-compose --version</div>
+
+    <h2>⚡ Quick Start Guide</h2>
+
+    <h3>1. Download Project and Checkout the Solution Branch</h3>
+    <p><strong>Download URL:</strong> <span class="inline-code">https://drive.google.com/drive/folders/16mz6cIVCp6lNRYRPBT2_XlgCbXHHKhqC?usp=sharing</span></p>
+    <div class="code-block">git checkout solution/masud-zaman</div>
+
+    <h3>2. One-Command Setup</h3>
+    <div class="code-block">chmod +x ./cmd/* && ./cmd/install</div>
+
+    <div class="success-box">
+        <p><strong>The install script will automatically:</strong></p>
+        <ul>
+            <li>Build Docker images and start containers</li>
+            <li>Initialize MySQL database with schema</li>
+            <li>Run migrations and seed realistic sample data</li>
+            <li>Configure all services and dependencies</li>
+        </ul>
+    </div>
+
+    <h3>3. Access Points</h3>
+    <div class="quick-links">
+        <h3>🔗 Application Access Points</h3>
+        <div class="link-grid">
+            <div class="link-item">
+                <strong>Swagger UI</strong>
+                http://localhost:5555
+            </div>
+            <div class="link-item">
+                <strong>API Base URL</strong>
+                http://localhost:8080
+            </div>
+            <div class="link-item">
+                <strong>PhpMyAdmin</strong>
+                http://localhost:8081
+            </div>
+        </div>
+    </div>
+
+    <div class="credentials">
+        <h4>🔐 Default Credentials</h4>
+        <div class="cred-grid">
+            <div class="cred-item">
+                <strong>Admin User:</strong><br>
+                admin@example.com / Password123
+            </div>
+            <div class="cred-item">
+                <strong>MySQL:</strong><br>
+                root / abc123456
+            </div>
+            <div class="cred-item">
+                <strong>Valid Client ID:</strong><br>
+                my-client-id-123
+            </div>
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <h2>📁 Project Structure</h2>
+    <div class="folder-structure">
+├── cmd/                          # Executable automation scripts
+├── src/
+│   ├── controllers/v1,v2/        # API endpoint handlers (versioned)
+│   ├── middleware/               # Authentication & error handling
+│   ├── models/                   # Sequelize database models
+│   ├── routes/v1,v2/            # Route definitions (versioned)
+│   └── utils/                    # Helper functions & responses
+├── test/                         # Jest test suites
+├── migrations/                   # Database schema migrations
+├── seeders/                      # Sample data seeders
+├── docker-entrypoint-initdb.d/   # MySQL initialization scripts
+├── config/                       # Database configuration
+├── .env.dev, .env.test, .env.prod # Environment configurations
+├── docker-compose*.yml           # Multi-environment Docker setup
+└── swagger.yaml                  # API documentation
+    </div>
+
+    <h2>🛠️ Technical Stack</h2>
+    <p>The solution implements a modular Node.js/Koa.js REST API with the following components:</p>
+    <div class="tech-stack">
+        <div class="tech-item">
+            <strong>Backend</strong>
+            Node.js with Koa.js framework, highly structured routing and middleware
+        </div>
+        <div class="tech-item">
+            <strong>Database</strong>
+            MySQL with Sequelize ORM, migrations, and seeders
+        </div>
+        <div class="tech-item">
+            <strong>Authentication</strong>
+            JWT-based with middleware for secure user authentication
+        </div>
+        <div class="tech-item">
+            <strong>Documentation</strong>
+            Swagger/OpenAPI integration for API documentation
+        </div>
+        <div class="tech-item">
+            <strong>Testing</strong>
+            Jest test suite with Docker-based test database
+        </div>
+        <div class="tech-item">
+            <strong>Containerization</strong>
+            Docker & Multi-environment Docker Compose with automation scripts
+        </div>
+        <div class="tech-item">
+            <strong>DevOps</strong>
+            Bash automation scripts & Process Management
+        </div>
+    </div>
+
+    <h2>✅ Core Features Implementation</h2>
+
+    <h3>Required Tasks (All Completed) <span class="status-badge">✓ COMPLETE</span></h3>
+    <div class="feature-list">
+        <div class="feature-item"><strong>Task 1-6:</strong> REST API with proper HTTP methods, status codes, and JSON responses</div>
+        <div class="feature-item"><strong>Database Integration:</strong> Sequelize ORM with migration and seeder support</div>
+        <div class="feature-item"><strong>Multi-Environment Support:</strong> Docker Compose configuration for dev/test/prod</div>
+        <div class="feature-item"><strong>Database Initialization:</strong> Automated MySQL setup with SQL scripts</div>
+        <div class="feature-item"><strong>Process Automation:</strong> Comprehensive bash scripts for container management</div>
+        <div class="feature-item"><strong>API Documentation:</strong> Interactive Swagger UI at localhost:5555</div>
+    </div>
+
+    <h3>🔧 Additional Engineering Enhancements</h3>
+    <div class="info-grid">
+        <div class="info-card">
+            <h4>Realistic Data Modeling</h4>
+            <ul>
+                <li>Comprehensive seed data reflecting real-world usage patterns</li>
+                <li>Complex relationships enabling realistic transaction flows</li>
+                <li>Meaningful sample data for effective testing</li>
+            </ul>
+        </div>
+        <div class="info-card">
+            <h4>Operational Excellence</h4>
+            <ul>
+                <li>Unified automation via bash scripts and Makefile</li>
+                <li>Environment-specific configuration management</li>
+                <li>Docker-based development workflow with hot reload</li>
+            </ul>
+        </div>
+        <div class="info-card">
+            <h4>Code Quality & Maintainability</h4>
+            <ul>
+                <li>Modular architecture with clear separation of concerns</li>
+                <li>Structured middleware, services, and controllers</li>
+                <li>Comprehensive error handling and logging</li>
+            </ul>
+        </div>
+        <div class="info-card">
+            <h4>Testing Infrastructure</h4>
+            <ul>
+                <li>Jest test suite covering API endpoints</li>
+                <li>Docker-based test database isolation</li>
+                <li>Automated test execution via <span class="inline-code">./cmd/app</span> + <span class="inline-code">npm run test</span> or <span class="inline-code">./cmd/test</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <h2>🏗️ Engineering Approach</h2>
+    <div class="highlight-box">
+        <p>Rather than implementing a minimal solution, I focused on building a system that demonstrates real-world engineering practices. This included investing time in automation, realistic data modeling, comprehensive testing, and operational tooling that would be expected in a production environment.</p>
+        <p><strong>Trade-off Decision:</strong> TypeScript migration was planned but deferred in favor of ensuring robust core functionality, comprehensive testing, and operational reliability. The current JavaScript implementation prioritizes stability and thorough feature coverage.</p>
+    </div>
+
+    <h2>🌍 Environment Configuration</h2>
+    <p>The project supports multiple environments with dedicated configuration:</p>
+    <div class="feature-list">
+        <div class="feature-item"><span class="inline-code">.env.dev</span> — Local development environment</div>
+        <div class="feature-item"><span class="inline-code">.env.test</span> — Testing and CI environment</div>
+        <div class="feature-item"><span class="inline-code">.env.prod</span> — Production deployment</div>
+    </div>
+    <p>Each environment maintains isolated database credentials, ports, and service configurations.</p>
+
+    <h2>🐳 Container Management</h2>
+
+    <h3>Quick Commands</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Script</th>
+                <th>Purpose</th>
+                <th>Usage</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="inline-code">install</span></td>
+                <td>Complete setup with seeding</td>
+                <td><span class="inline-code">./cmd/install</span></td>
+            </tr>
+            <tr>
+                <td><span class="inline-code">up</span></td>
+                <td>Start containers</td>
+                <td><span class="inline-code">./cmd/up</span></td>
+            </tr>
+            <tr>
+                <td><span class="inline-code">stop</span></td>
+                <td>Stop containers</td>
+                <td><span class="inline-code">./cmd/stop</span></td>
+            </tr>
+            <tr>
+                <td><span class="inline-code">down</span></td>
+                <td>Stop and remove containers</td>
+                <td><span class="inline-code">./cmd/down</span></td>
+            </tr>
+            <tr>
+                <td><span class="inline-code">restart</span></td>
+                <td>Restart all services</td>
+                <td><span class="inline-code">./cmd/restart</span></td>
+            </tr>
+            <tr>
+                <td><span class="inline-code">rebuild</span></td>
+                <td>Rebuild with no cache</td>
+                <td><span class="inline-code">./cmd/rebuild</span></td>
+            </tr>
+            <tr>
+                <td><span class="inline-code">reinstall</span></td>
+                <td>Fresh installation with clean database</td>
+                <td><span class="inline-code">./cmd/reinstall</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Environment-Specific Operations</h3>
+    <div class="code-block"># Install for specific environment
+./cmd/install dev    # Default if no environment specified
+./cmd/install test   # Testing environment with isolated database
+./cmd/install prod   # Production-ready configuration
+
+# Environment switching
+./cmd/env dev        # Switch to development environment
+./cmd/env test       # Switch to testing environment
+
+# Complete reinstallation with fresh database
+./cmd/reinstall dev  # Clean volumes, rebuild, migrate, and seed</div>
+
+    <h2>🗄️ Database Management</h2>
+
+    <h3>Automated Setup</h3>
+    <ul>
+        <li>SQL initialization scripts in <span class="inline-code">docker-entrypoint-initdb.d</span> is available, but not used due to automatic database initialization setup using docker-compose, customized scripts, and environment variables for migrations and seeds.</li>
+        <li>Sequelize migrations for schema versioning</li>
+        <li>Comprehensive seeders with realistic sample data</li>
+    </ul>
+
+    <h3>Manual Operations</h3>
+    <div class="code-block">./cmd/app
+npm run migrate
+npm run seed
+npm run migrate:undo
+npm run migrate:undo:all</div>
+
+    <div class="page-break"></div>
+
+    <h2>🔐 Authentication & Authorization</h2>
+
+    <h3>Implementation</h3>
+    <div class="feature-list">
+        <div class="feature-item">User management with secure password hashing</div>
+        <div class="feature-item">JWT token-based authentication via <span class="inline-code">POST /login</span></div>
+        <div class="feature-item">Required <span class="inline-code">X-Client-ID</span> header validation</div>
+        <div class="feature-item">Automatic audit trail with <span class="inline-code">created_by</span>/<span class="inline-code">updated_by</span> tracking</div>
+    </div>
+
+    <h3>Usage Example</h3>
+    <div class="code-block"># Login
+curl -X 'POST' \
+  'http://localhost:8080/api/v1/auth/login' \
+  -H 'accept: application/json' \
+  -H 'x-client-id: my-client-id-123' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "email": "user-1@example.com",
+  "password": "Password123"
+}'</div>
+
+    <div class="highlight-box">
+        <h4># Use token for authenticated requests</h4>
+        <p><strong>Headers:</strong></p>
+        <div class="code-block">Authorization: Bearer &lt;jwt_token&gt;
+X-Client-ID: my-client-id-123</div>
+    </div>
+
+    <div class="info-card">
+        <h4>🎫 Token Features</h4>
+        <ul>
+            <li>Configurable expiry via <span class="inline-code">JWT_EXPIRES_IN</span> environment variable</li>
+            <li>Email claims automatically recorded as <span class="inline-code">created_by</span>/<span class="inline-code">updated_by</span> in audit trails</li>
+            <li>Secure JWT secret configuration via <span class="inline-code">JWT_SECRET</span></li>
+        </ul>
+    </div>
+
+    <h2>🧪 Testing</h2>
+
+    <h3>Test Execution</h3>
+    <div class="code-block">./cmd/test
+# or
+./cmd/app
+npm run test</div>
+
+    <h3>Test Coverage</h3>
+    <div class="feature-list">
+        <div class="feature-item">API endpoint validation</div>
+        <div class="feature-item">Authentication flow testing</div>
+        <div class="feature-item">Database integration tests</div>
+        <div class="feature-item">Error handling verification</div>
+    </div>
+
+    <h2>📚 API Documentation</h2>
+    <div class="success-box">
+        <p><strong>Interactive Documentation:</strong> Available at <a href="http://localhost:5555" target="_blank">http://localhost:5555</a> via Swagger UI with complete endpoint testing capabilities.</p>
+        <p><strong>YAML Documentation:</strong> Full endpoint documentation available at <span class="inline-code">./swagger.yaml</span> for offline reference and integration testing.</p>
+    </div>
+
+    <div class="highlight-box">
+        <p>This API allows clients to perform discovery, health checks, and issue tracking.</p>
+        <p><strong>This API requires:</strong></p>
+        <ul>
+            <li>Setting the <span class="inline-code">X-Client-ID</span> header for all requests. Set this value: <span class="inline-code">my-client-id-123</span> to X-Client-ID field in Authorize area.</li>
+            <li>Authorizing using Bearer Token after login. Set token via Authorization tab or <span class="inline-code">Authorization</span> header.</li>
+        </ul>
+    </div>
+
+    <h3>API Endpoints Summary</h3>
+    <div class="feature-list">
+        <div class="feature-item"><span class="inline-code">POST /login</span> - User authentication</div>
+        <div class="feature-item"><span class="inline-code">GET/POST/PUT/DELETE /api/v1/[resource]</span> - CRUD operations</div>
+        <div class="feature-item"><span class="inline-code">GET /api/v2/[resource]</span> - Versioned endpoints</div>
+        <div class="feature-item"><span class="inline-code">GET /api/v1/health</span> - Health check endpoint</div>
+        <div class="feature-item"><span class="inline-code">GET /api/v1/discovery</span> - Discovery endpoint</div>
+        <div class="feature-item"><span class="inline-code">GET /api/v1/issues</span> - Issue tracking endpoint</div>
+    </div>
+
+    <h3>Versioning and Prefix</h3>
+    <div class="info-card">
+        <h4>🔄 Flexible API Versioning</h4>
+        <ul>
+            <li>You can switch between versions using the path parameters like <span class="inline-code">/v1</span>, <span class="inline-code">/v2</span>, or omit when not needed.</li>
+            <li>Prefix can also be changed dynamically depending on environment setup.</li>
+            <li>For example, <span class="inline-code">/api/v1</span> or <span class="inline-code">/api/v2</span> or <span class="inline-code">/v1</span> or <span class="inline-code">/v2</span> depending on the setup.</li>
+            <li>All APIs are accessible in all combinations of: 
+                <ul>
+                    <li><strong>No prefix (/)</strong></li>
+                    <li><strong>Version only (/v1, /v2, etc.)</strong></li>
+                    <li><strong>API prefix only (/api)</strong></li>
+                    <li><strong>API prefix + version (/api/v1, /api/v2, etc.)</strong></li>
+                </ul>
+            </li>
+        </ul>
+        <p>When version grows (v1, v2, and so on), as a future-proof solution, this setup allows: <span class="inline-code">/health</span> <span class="inline-code">/api/health</span> <span class="inline-code">/v1/health</span> <span class="inline-code">/v2/health</span> <span class="inline-code">/api/v1/health</span> <span class="inline-code">/api/v2/health</span> etc...</p>
+    </div>
+
+    <div class="warning-box">
+        <p><strong>⚠️ Important Requirements:</strong></p>
+        <ul>
+            <li>All endpoints require <span class="inline-code">X-Client-ID</span> (Value: <span class="inline-code">my-client-id-123</span>)</li>
+            <li>Some endpoints require Bearer Token from login response</li>
+        </ul>
+    </div>
+
+    <div class="page-break"></div>
+
+    <h2>📮 Postman Collection</h2>
+    <div class="success-box">
+        <p><strong>Postman Collection:</strong> Import <span class="inline-code">Trail Day REST API.postman_collection.json</span> for automated testing workflows:</p>
+        <ol>
+            <li>Import the collection into Postman</li>
+            <li>Authenticate via <span class="inline-code">/login</span> endpoint</li>
+            <li>Token automatically applied to subsequent requests</li>
+            <li>Complete test coverage for all endpoints</li>
+        </ol>
+    </div>
+
+    <h2>🚀 Production Deployment Notes</h2>
+    <div class="warning-box">
+        <ul>
+            <li>Use <span class="inline-code">./cmd/install prod</span> for production setup</li>
+            <li>Ensure environment variables are properly configured</li>
+            <li>Database credentials should be updated for production</li>
+            <li>Consider load balancing and scaling requirements</li>
+        </ul>
+    </div>
+
+    <h2>🔧 Troubleshooting</h2>
+    <div class="info-grid">
+        <div class="info-card">
+            <h4>Port Conflicts</h4>
+            <p>Ensure ports 8080, 5555, 8081, 3306 are available</p>
+        </div>
+        <div class="info-card">
+            <h4>Docker Issues</h4>
+            <p>Run <span class="inline-code">docker system prune</span> if containers fail to start</p>
+        </div>
+        <div class="info-card">
+            <h4>Database Connection Errors</h4>
+            <p>Verify MySQL container is fully initialized</p>
+        </div>
+    </div>
+
+    <h2>💻 Development Workflow</h2>
+
+    <h3>Container Access</h3>
+    <div class="code-block">./cmd/app  # Enter application container
+./cmd/exec dev  # Execute shell in dev environment</div>
+
+    <h3>Database Access</h3>
+    <div class="feature-list">
+        <div class="feature-item"><strong>PhpMyAdmin:</strong> <a href="http://localhost:8081" target="_blank">http://localhost:8081</a></div>
+        <div class="feature-item"><strong>Direct MySQL:</strong> Connect to <span class="inline-code">localhost:3306</span> with provided credentials</div>
+    </div>
+
+    <h3>Log Monitoring</h3>
+    <div class="code-block">docker-compose logs -f app
+docker-compose logs -f mysql</div>
+
+    <h2>🔮 Future Enhancements</h2>
+    <div class="feature-list">
+        <div class="feature-item">TypeScript migration for better type safety</div>
+        <div class="feature-item">Redis caching layer implementation</div>
+        <div class="feature-item">API rate limiting</div>
+        <div class="feature-item">Enhanced monitoring and logging</div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <h2>📝 Summary</h2>
+    <div class="highlight-box">
+        <p>This submission delivers a complete, production-ready REST API that exceeds the basic requirements through thoughtful engineering practices. The solution emphasizes maintainability, operational reliability, and realistic data flows while providing comprehensive tooling for development and deployment workflows.</p>
+        
+        <h3>Key Achievements:</h3>
+        <div class="feature-list">
+            <div class="feature-item"><strong>Complete Task Implementation:</strong> All 6 required tasks fully implemented with proper REST API conventions</div>
+            <div class="feature-item"><strong>Production-Ready Architecture:</strong> Modular design with clear separation of concerns and scalable patterns</div>
+            <div class="feature-item"><strong>Comprehensive Testing:</strong> Jest test suite with Docker-based isolation and automated execution</div>
+            <div class="feature-item"><strong>Operational Excellence:</strong> Full automation scripts, multi-environment support, and deployment tooling</div>
+            <div class="feature-item"><strong>Developer Experience:</strong> Interactive documentation, realistic sample data, and streamlined workflow</div>
+            <div class="feature-item"><strong>Security Implementation:</strong> JWT authentication, secure password handling, and audit trail tracking</div>
+        </div>
+
+        <h3>Technical Highlights:</h3>
+        <ul>
+            <li><strong>Modern Tech Stack:</strong> Node.js/Koa.js with MySQL and Sequelize ORM</li>
+            <li><strong>API Versioning:</strong> Flexible versioning system supporting multiple URL patterns</li>
+            <li><strong>Container Orchestration:</strong> Docker Compose with environment-specific configurations</li>
+            <li><strong>Database Management:</strong> Automated migrations, seeders, and initialization scripts</li>
+            <li><strong>Documentation:</strong> Interactive Swagger UI and comprehensive API documentation</li>
+            <li><strong>Authentication:</strong> JWT-based security with configurable expiration and audit tracking</li>
+        </ul>
+
+        <p><strong>Engineering Philosophy:</strong> Rather than implementing a minimal viable product, this solution demonstrates enterprise-level engineering practices including automation, testing, documentation, and operational considerations that would be expected in a real-world production environment.</p>
+    </div>
+
+    <div class="quick-links">
+        <h3>🎯 Quick Access Summary</h3>
+        <div class="link-grid">
+            <div class="link-item">
+                <strong>Setup Command</strong>
+                chmod +x ./cmd/* && ./cmd/install
+            </div>
+            <div class="link-item">
+                <strong>API Documentation</strong>
+                http://localhost:5555
+            </div>
+            <div class="link-item">
+                <strong>API Endpoint</strong>
+                http://localhost:8080
+            </div>
+            <div class="link-item">
+                <strong>Database Admin</strong>
+                http://localhost:8081
+            </div>
+            <div class="link-item">
+                <strong>Test Execution</strong>
+                ./cmd/test
+            </div>
+            <div class="link-item">
+                <strong>Container Management</strong>
+                ./cmd/[up|stop|restart]
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 10px; border: 2px solid #e9ecef;">
+        <h3 style="color: #495057; margin-bottom: 20px;">📋 Project Submission Complete</h3>
+        <p style="font-size: 1.1em; color: #6c757d; margin: 0;">
+            <strong>Masud Zaman</strong> | <strong>May 29, 2025</strong> | <strong>solution/masud-zaman</strong>
+        </p>
+        <p style="font-size: 0.9em; color: #6c757d; margin-top: 15px;">
+            Issue Tracker API - Production-Ready REST API Implementation
+        </p>
+    </div>
+
+</body>
+</html>

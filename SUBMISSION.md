@@ -1,5 +1,19 @@
-# Project Submission Document
+# Project Submission Document  
+## Issue Tracker API  
 
+**Project:** Issue Tracker API - REST API Implementation  
+**Date:** May 29, 2025  
+**Branch:** solution/masud-zaman
+
+**Submitted By:** Masud Zaman  
+**Email:** masud.zmn@gmail.com  
+**GitHub:** https://github.com/mzaman  
+**LinkedIn:** https://www.linkedin.com/in/masudzaman  
+
+---
+
+
+---
 ## Overview
 
 This submission demonstrates a production-ready REST API implementation that addresses all required tasks while incorporating additional engineering practices for maintainability, testing, and operational reliability. The solution emphasizes realistic data flows, comprehensive automation, and scalable architecture patterns.
@@ -72,17 +86,15 @@ The install script will automatically:
 
 ---
 
-## Architecture Overview
-
+## Technical Stack
 The solution implements a modular Node.js/Koa.js REST API with the following components:
-
-- **API Layer:** Koa.js with structured routing and middleware
+- **Backend:** Node.js with Koa.js framework, highly structured routing and middleware
 - **Database:** MySQL with Sequelize ORM, migrations, and seeders
-- **Authentication:** JWT-based with role management
-- **Documentation:** Swagger UI integration
+- **Authentication:** JWT-based with middleware for secure user authentication
+- **Documentation:** Swagger/OpenAPI integration for API documentation
 - **Testing:** Jest test suite with Docker-based test database
-- **DevOps:** Multi-environment Docker Compose with automation scripts
-
+- **Containerization:** Docker & Multi-environment Docker Compose with automation scripts
+- **DevOps & Process Management:** Bash automation scripts
 ---
 
 ## Core Features Implementation
@@ -176,7 +188,7 @@ Each environment maintains isolated database credentials, ports, and service con
 
 ### Automated Setup
 
-- SQL initialization scripts in `docker-entrypoint-initdb.d`
+- SQL initialization scripts in `docker-entrypoint-initdb.d` is available, but not used due to automatic database initialization setup using docker-compose, customized scripts, and environment variables for migrations and seeds.
 - Sequelize migrations for schema versioning
 - Comprehensive seeders with realistic sample data
 
@@ -205,14 +217,20 @@ npm run migrate:undo:all
 
 ```bash
 # Login
-POST /login
-{
-  "email": "admin@example.com",
+curl -X 'POST' \
+  'http://localhost:8080/api/v1/auth/login' \
+  -H 'accept: application/json' \
+  -H 'x-client-id: my-client-id-123' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "email": "user-1@example.com",
   "password": "Password123"
-}
+}'
+```
 
 # Use token for authenticated requests
 Headers:
+```
 Authorization: Bearer <jwt_token>
 X-Client-ID: my-client-id-123
 ```
@@ -246,7 +264,38 @@ npm run test
 
 ## API Documentation
 
-**Interactive Documentation:** Available at [http://localhost:5555](http://localhost:5555) via Swagger UI with complete endpoint testing capabilities.
+**Interactive Documentation:** Available at [http://localhost:5555](http://localhost:5555) via Swagger UI with complete endpoint testing capabilities. 
+**YAML Documentation:** Full endpoint documentation available at `./swagger.yaml` for offline reference and integration testing. 
+
+This API allows clients to perform discovery, health checks, and issue tracking.
+This API requires:
+- Setting the `X-Client-ID` header for all requests. Set this value: `my-client-id-123` to X-Client-ID field in Authorize area.
+- Authorizing using Bearer Token after login. Set token via Authorization tab or `Authorization` header.
+
+## API Endpoints Summary
+- `POST /login` - User authentication
+- `GET/POST/PUT/DELETE /api/v1/[resource]` - CRUD operations
+- `GET /api/v2/[resource]` - Versioned endpoints
+- `GET /api/v1/health` - Health check endpoint
+- `GET /api/v1/discovery` - Discovery endpoint
+- `GET /api/v1/issues` - Issue tracking endpoint
+
+## Versioning and Prefix
+- You can switch between versions using the path parameters like `/v1`, `/v2`, or omit when not needed.
+- Prefix can also be changed dynamically depending on environment setup.
+- For example, `/api/v1` or `/api/v2` or `/v1` or `/v2` depending on the setup. And all APIs are accessible in all combinations of: 
+	- `No prefix (/)` `Version only (/v1, /v2, etc.)` `API prefix only (/api)` `API prefix + version (/api/v1, /api/v2, etc.)`
+
+- When version grows (v1, v2, and so on), as a future-proof solution, this setup allows:
+	-	`/health` `/api/health` `/v1/health` `/v2/health` `/api/v1/health` `/api/v2/health` etc...
+	
+* All endpoints require `X-Client-ID` (Value: `my-client-id-123`).  
+* Some endpoints require Bearer Token from login response.
+
+
+---
+
+## Postman Collection
 
 **Postman Collection:** Import `Trail Day REST API.postman_collection.json` for automated testing workflows:
 1. Import the collection into Postman
@@ -256,8 +305,21 @@ npm run test
 
 ---
 
-## Development Workflow
+## Production Deployment Notes
+- Use `./cmd/install prod` for production setup
+- Ensure environment variables are properly configured
+- Database credentials should be updated for production
+- Consider load balancing and scaling requirements
 
+---
+
+
+## Troubleshooting
+- **Port conflicts:** Ensure ports 8080, 5555, 8081, 3306 are available
+- **Docker issues:** Run `docker system prune` if containers fail to start
+- **Database connection errors:** Verify MySQL container is fully initialized
+
+## Development Workflow
 ### Container Access
 
 ```bash
@@ -276,6 +338,14 @@ npm run test
 docker-compose logs -f app
 docker-compose logs -f mysql
 ```
+
+---
+
+## Future Enhancements
+- TypeScript migration for better type safety
+- Redis caching layer implementation
+- API rate limiting
+- Enhanced monitoring and logging
 
 ---
 
