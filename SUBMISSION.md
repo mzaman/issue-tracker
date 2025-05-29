@@ -67,21 +67,21 @@ The install script will automatically:
 ## Project Structure
 
 ```
-├── cmd/                          # Executable automation scripts
+├── cmd/                            # Executable automation scripts
 ├── src/
-│   ├── controllers/v1,v2/        # API endpoint handlers (versioned)
-│   ├── middleware/               # Authentication & error handling
-│   ├── models/                   # Sequelize database models
-│   ├── routes/v1,v2/            # Route definitions (versioned)
-│   └── utils/                    # Helper functions & responses
-├── test/                         # Jest test suites
-├── migrations/                   # Database schema migrations
-├── seeders/                      # Sample data seeders
-├── docker-entrypoint-initdb.d/   # MySQL initialization scripts
-├── config/                       # Database configuration
-├── .env.dev, .env.test, .env.prod # Environment configurations
-├── docker-compose*.yml           # Multi-environment Docker setup
-└── swagger.yaml                  # API documentation
+│   ├── controllers/v1,v2/          # API endpoint handlers (versioned)
+│   ├── middleware/                 # Authentication & error handling
+│   ├── models/                     # Sequelize database models
+│   ├── routes/v1,v2/               # Route definitions (versioned)
+│   └── utils/                      # Helper functions & responses
+├── test/                           # Jest test suites
+├── migrations/                     # Database schema migrations
+├── seeders/                        # Sample data seeders
+├── docker-entrypoint-initdb.d/     # MySQL initialization scripts
+├── config/                         # Database configuration
+├── .env.dev, .env.test, .env.prod  # Environment configurations
+├── docker-compose*.yml             # Multi-environment Docker setup
+└── swagger.yaml                    # API documentation
 ```
 
 ---
@@ -315,7 +315,7 @@ This API requires:
 
 
 ## Troubleshooting
-- **Port conflicts:** Ensure ports 8080, 5555, 8081, 3306 are available
+- **Port conflicts:** Ensure ports 8080, 5555, 8081, 3307 are available
 - **Docker issues:** Run `docker system prune` if containers fail to start
 - **Database connection errors:** Verify MySQL container is fully initialized
 
@@ -330,7 +330,7 @@ This API requires:
 ### Database Access
 
 - **PhpMyAdmin:** [http://localhost:8081](http://localhost:8081)
-- **Direct MySQL:** Connect to `localhost:3306` with provided credentials
+- **Direct MySQL:** Connect to `localhost:3307` with provided credentials
 
 ### Log Monitoring
 
