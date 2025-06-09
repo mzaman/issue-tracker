@@ -209,8 +209,8 @@
             background: #f0f9ff;
             border: 1px solid #bae6fd;
             border-radius: 6px;
-            padding: 15px;
-            display: flex;
+            padding: 15px 15px 15px 22px;
+            display: ruby-base;
             align-items: flex-start;
             gap: 10px;
         }
@@ -220,6 +220,9 @@
             color: #059669;
             font-weight: bold;
             font-size: 1.2em;
+            position: relative;
+            left: -7px;
+            top: 1px;
         }
 
         .tech-stack {
@@ -272,6 +275,15 @@
             text-decoration: none;
             color: #e5e7eb;
             transition: all 0.3s ease;
+        }
+
+        .link-item a {
+            color: #0474fd;
+            text-decoration: underline;
+        }
+
+        .link-item:hover a {
+            color: #2280f4;
         }
 
         .link-item:hover {
@@ -412,8 +424,9 @@
     </div>
 
     <p><strong>Verify installation:</strong></p>
-    <div class="code-block">docker --version
-        docker-compose --version</div>
+    <div class="code-block">
+        <pre>docker --version <br>docker-compose --version</pre>
+    </div>
 
     <h2>⚡ Quick Start Guide</h2>
 
@@ -428,7 +441,7 @@
     <div class="code-block">git checkout solution/masud-zaman</div>
 
     <h3>2. One-Command Setup</h3>
-    <div class="code-block">chmod +x ./cmd/* & ./cmd/install</div>
+    <div class="code-block">chmod +x ./cmd/* && ./cmd/install</div>
 
     <div class="success-box">
         <p><strong>The install script will automatically:</strong></p>
@@ -482,22 +495,21 @@
     <h2>📁 Project Structure</h2>
     <div class="folder-structure">
         <pre>
-
-            ├── cmd/                            # Executable automation scripts
-            ├── src/
-            │   ├── controllers/v1,v2/          # API endpoint handlers (versioned)
-            │   ├── middleware/                 # Authentication & error handling
-            │   ├── models/                     # Sequelize database models
-            │   ├── routes/v1,v2/               # Route definitions (versioned)
-            │   └── utils/                      # Helper functions & responses
-            ├── test/                           # Jest test suites
-            ├── migrations/                     # Database schema migrations
-            ├── seeders/                        # Sample data seeders
-            ├── docker-entrypoint-initdb.d/     # MySQL initialization scripts
-            ├── config/                         # Database configuration
-            ├── .env.dev, .env.test, .env.prod  # Environment configurations
-            ├── docker-compose*.yml             # Multi-environment Docker setup
-            └── swagger.yaml                    # API documentation
+    ├── cmd/                            # Executable automation scripts
+    ├── src/
+    │   ├── controllers/v1,v2/          # API endpoint handlers (versioned)
+    │   ├── middleware/                 # Authentication & error handling
+    │   ├── models/                     # Sequelize database models
+    │   ├── routes/v1,v2/               # Route definitions (versioned)
+    │   └── utils/                      # Helper functions & responses
+    ├── test/                           # Jest test suites
+    ├── migrations/                     # Database schema migrations
+    ├── seeders/                        # Sample data seeders
+    ├── docker-entrypoint-initdb.d/     # MySQL initialization scripts
+    ├── config/                         # Database configuration
+    ├── .env.dev, .env.test, .env.prod  # Environment configurations
+    ├── docker-compose*.yml             # Multi-environment Docker setup
+    └── swagger.yaml                    # API documentation
         </pre>
     </div>
 
@@ -663,17 +675,17 @@
     <h3>Environment-Specific Operations</h3>
     <div class="code-block">
         <pre>
-            <strong>Install for specific environment</strong> 
-            <span class="inline-code">./cmd/install dev  </span>     # Default if no environment specified
-            <span class="inline-code">./cmd/install test </span>     # Testing environment with isolated database
-            <span class="inline-code">./cmd/install prod </span>     # Production-ready configuration
+    <strong>Install for specific environment</strong> 
+    <span class="inline-code">./cmd/install dev  </span>     # Default if no environment specified
+    <span class="inline-code">./cmd/install test </span>     # Testing environment with isolated database
+    <span class="inline-code">./cmd/install prod </span>     # Production-ready configuration
 
-            <strong>Environment switching</strong>
-            <span class="inline-code">./cmd/restart dev      </span>     # Switch to development environment
-            <span class="inline-code">./cmd/restart test     </span>     # Switch to testing environment
+    <strong>Environment switching</strong>
+    <span class="inline-code">./cmd/restart dev  </span>     # Switch to development environment
+    <span class="inline-code">./cmd/restart test </span>     # Switch to testing environment
 
-            <strong>Complete reinstallation with fresh database</strong>
-            <span class="inline-code">./cmd/reinstall dev</span>     # Clean volumes, rebuild, migrate, and seed
+    <strong>Complete reinstallation with fresh database</strong>
+    <span class="inline-code">./cmd/reinstall dev</span>     # Clean volumes, rebuild, migrate, and seed
         </pre>
     </div>
 
@@ -691,12 +703,11 @@
     <h3>Manual Operations</h3>
     <div class="code-block">
         <pre>
-
-        ./cmd/app
-        npm run migrate
-        npm run seed
-        npm run migrate:undo
-        npm run migrate:undo:all
+    ./cmd/app
+    npm run migrate
+    npm run seed
+    npm run migrate:undo
+    npm run migrate:undo:all
         </pre>
     </div>
 
@@ -714,16 +725,20 @@
     </div>
 
     <h3>Usage Example</h3>
-    <div class="code-block"># Login
-        curl -X 'POST' \
-        'http://localhost:8080/api/v1/auth/login' \
-        -H 'accept: application/json' \
-        -H 'x-client-id: my-client-id-123' \
-        -H 'Content-Type: application/json' \
-        -d '{
+    <div class="code-block">
+        <pre>
+    # Login
+    curl -X 'POST' \
+    'http://localhost:8080/api/v1/auth/login' \
+    -H 'accept: application/json' \
+    -H 'x-client-id: my-client-id-123' \
+    -H 'Content-Type: application/json' \
+    -d '{
         "email": "user-1@example.com",
         "password": "Password123"
-        }'</div>
+    }'
+        </pre>
+    </div>
 
     <div class="highlight-box">
         <h4># Use token for authenticated requests</h4>
@@ -747,10 +762,10 @@
     <h3>Test Execution</h3>
     <div class="code-block">
         <pre>
-        ./cmd/test
-        # or
-        ./cmd/app
-        npm run test
+    ./cmd/test
+    # or
+    ./cmd/app
+    npm run test
         </pre>
     </div>
 
@@ -874,9 +889,8 @@
     <h3>Container Access</h3>
     <div class="code-block">
         <pre>
-
-        ./cmd/app       # Enter application container
-        ./cmd/exec dev  # Execute shell in dev environment
+    ./cmd/app       # Enter application container
+    ./cmd/exec dev  # Execute shell in dev environment
         </pre>
     </div>
 
@@ -891,8 +905,8 @@
     <h3>Log Monitoring</h3>
     <div class="code-block">
         <pre>
-            docker-compose logs -f app
-            docker-compose logs -f mysql
+    docker-compose logs -f app
+    docker-compose logs -f mysql
         </pre>
     </div>
 
