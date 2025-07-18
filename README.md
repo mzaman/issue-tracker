@@ -26,7 +26,6 @@ The repo contains a simplistic Docker Compose setup to make your life easier, bu
 
 * Create your own Git branch in the format `solution/{firstname}-{lastname}`, e.g. `solution/peter-griffin`.
 * We encourage you to commit often, but feel free to use whatever approach works best for you.
-* Currently the project repository has no remote set up, please keep it that way, don't publish or share it.
 * Keep this README file for the instructions, and create a new `SUBMISSION.md` file to document any important decisions, trade-offs or technical details that will help us understand you solution.
 * At the end, compress the repository to a .zip file and upload it to the link we provided in the email. Make sure the .zip file contains hidden files & directories (e.g. `.git`, `.env`) but doesn't contain the `node_modules` folder.
 
